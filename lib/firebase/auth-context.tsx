@@ -1,0 +1,109 @@
+"use client";
+
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  type User,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  updateProfile,
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/client";
+
+interface UserProfile {
+  id: string;
+  email: string;
+  displayName: string | null;
+  photoURL: string | null;
+  createdAt: Date;
+}
+
+interface AuthContextType {
+  user: User | null;
+  profile: UserProfile | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, displayName: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+
+export const useAuth = () => useContext(AuthContext);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProfile = useCallback(async (firebaseUser: User) => {
+    try {
+      const docRef = doc(db, "users", firebaseUser.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setProfile(docSnap.data() as UserProfile);
+      } else {
+        const newProfile: UserProfile = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email!,
+          displayName: firebaseUser.displayName || null,
+          photoURL: firebaseUser.photoURL || null,
+          createdAt: new Date(),
+        };
+        await setDoc(docRef, newProfile);
+        setProfile(newProfile);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        await fetchProfile(firebaseUser);
+      } else {
+        setProfile(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [fetchProfile]);
+
+  const signIn = async (email: string, password: string) => {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const token = await userCredential.user.getIdToken();
+    document.cookie = `__session=${token}; path=/; max-age=3600`;
+  };
+
+  const signUp = async (email: string, password: string, displayName: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCredential.user, { displayName });
+    const token = await userCredential.user.getIdToken();
+    document.cookie = `__session=${token}; path=/; max-age=3600`;
+  };
+
+  const signOut = async () => {
+    await firebaseSignOut(auth);
+    document.cookie = `__session=; path=/; max-age=0`;
+  };
+
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ user, profile, loading, signIn, signUp, signOut, resetPassword }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}

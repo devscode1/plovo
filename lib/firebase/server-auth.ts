@@ -1,0 +1,36 @@
+import { cookies } from "next/headers";
+import { adminAuth, adminDb } from "@/lib/firebase/admin";
+import type { DecodedIdToken } from "firebase-admin/auth";
+
+export async function verifyAuth(): Promise<{ userId: string; token: DecodedIdToken } | null> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("__session")?.value;
+
+    if (!token) {
+      return null;
+    }
+
+    const decodedToken = await adminAuth.verifyIdToken(token);
+    return { userId: decodedToken.uid, token: decodedToken };
+  } catch {
+    return null;
+  }
+}
+
+export async function getActiveOrgId(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies();
+    return cookieStore.get("activeOrgId")?.value || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function requireAuth() {
+  const auth = await verifyAuth();
+  if (!auth) {
+    throw new Error("Unauthorized");
+  }
+  return auth;
+}
