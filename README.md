@@ -45,7 +45,7 @@ Here is the folder structure of this app.
 
 <!--- FOLDER_STRUCTURE_START --->
 ```bash
-trello-clone/
+plovo/
   |- actions/
     |-- copy-card/
     |-- copy-list/
@@ -55,13 +55,13 @@ trello-clone/
     |-- delete-board/
     |-- delete-card/
     |-- delete-list/
-    |-- stripe-redirect/
     |-- update-board/
     |-- update-card/
     |-- update-card-order/
     |-- update-list/
     |-- update-list-order/
   |- app/
+    |-- (auth)/
     |-- (marketing)/
     |-- (platform)/
     |-- api/
@@ -88,35 +88,31 @@ trello-clone/
     |-- use-action.ts
     |-- use-card-modal.ts
     |-- use-mobile-sidebar.ts
-    |-- use-pro-modal.ts
   |- lib/
+    |-- firebase/
     |-- create-audit-log.ts
     |-- create-safe-action.ts
-    |-- db.ts
     |-- fetcher.ts
     |-- generate-log-messages.ts
     |-- org-limit.ts
-    |-- stripe.ts
     |-- subscription.ts
     |-- unsplash.ts
     |-- utils.ts
-  |- prisma/
-    |-- schema.prisma
   |- public/
   |- .env.example
   |- .env/.env.local
   |- .eslintrc.json
   |- .gitignore
-  |- bun.lock
   |- components.json
   |- middleware.ts
   |- next.config.js
+  |- package-lock.json
   |- package.json
   |- postcss.config.js
   |- tailwind.config.ts
   |- tsconfig.json
   |- types.ts
-  |- vercel.ts
+  |- vercel.json
 ```
 <!--- FOLDER_STRUCTURE_END --->
 
@@ -225,9 +221,7 @@ Useful resources and libraries that are used in My Portfolio
 
 - Thanks to CodeWithAntonio: https://codewithantonio.com/
 <!--- DEPENDENCIES_START --->
-- [@clerk/nextjs](https://www.npmjs.com/package/@clerk/nextjs): ^4.31.5
 - [@hello-pangea/dnd](https://www.npmjs.com/package/@hello-pangea/dnd): ^16.6.0
-- [@prisma/client](https://www.npmjs.com/package/@prisma/client): ^5.22.0
 - [@radix-ui/react-accordion](https://www.npmjs.com/package/@radix-ui/react-accordion): ^1.2.12
 - [@radix-ui/react-avatar](https://www.npmjs.com/package/@radix-ui/react-avatar): ^1.1.11
 - [@radix-ui/react-dialog](https://www.npmjs.com/package/@radix-ui/react-dialog): ^1.1.15
@@ -238,26 +232,24 @@ Useful resources and libraries that are used in My Portfolio
 - [@radix-ui/react-tooltip](https://www.npmjs.com/package/@radix-ui/react-tooltip): ^1.2.8
 - [@tanstack/react-query](https://www.npmjs.com/package/@tanstack/react-query): ^5.90.21
 - [@types/lodash](https://www.npmjs.com/package/@types/lodash): ^4.17.23
-- [@types/node](https://www.npmjs.com/package/@types/node): ^25.2.3
-- [@types/react](https://www.npmjs.com/package/@types/react): ^19.2.14
-- [@types/react-dom](https://www.npmjs.com/package/@types/react-dom): ^19.2.3
-- [@vercel/config](https://www.npmjs.com/package/@vercel/config): ^0.0.33
+- [@types/node](https://www.npmjs.com/package/@types/node): ^22.0.0
+- [@types/react](https://www.npmjs.com/package/@types/react): ^19.0.0
+- [@types/react-dom](https://www.npmjs.com/package/@types/react-dom): ^19.0.0
 - [autoprefixer](https://www.npmjs.com/package/autoprefixer): ^10.4.24
 - [class-variance-authority](https://www.npmjs.com/package/class-variance-authority): ^0.7.1
 - [clsx](https://www.npmjs.com/package/clsx): ^2.1.1
 - [date-fns](https://www.npmjs.com/package/date-fns): ^4.1.0
 - [eslint](https://www.npmjs.com/package/eslint): ^8
-- [eslint-config-next](https://www.npmjs.com/package/eslint-config-next): 14.0.3
+- [eslint-config-next](https://www.npmjs.com/package/eslint-config-next): 15.2.3
+- [firebase](https://www.npmjs.com/package/firebase): ^11.10.0
+- [firebase-admin](https://www.npmjs.com/package/firebase-admin): ^13.0.0
 - [lodash](https://www.npmjs.com/package/lodash): ^4.17.23
 - [lucide-react](https://www.npmjs.com/package/lucide-react): ^0.574.0
-- [next](https://www.npmjs.com/package/next): 15.5.15
-- [next-pwa](https://www.npmjs.com/package/next-pwa): ^5.6.0
+- [next](https://www.npmjs.com/package/next): ^15.5.15
 - [postcss](https://www.npmjs.com/package/postcss): ^8
-- [prisma](https://www.npmjs.com/package/prisma): ^5.6.0
-- [react](https://www.npmjs.com/package/react): ^19.2.4
-- [react-dom](https://www.npmjs.com/package/react-dom): ^19.2.4
+- [react](https://www.npmjs.com/package/react): ^19.0.0
+- [react-dom](https://www.npmjs.com/package/react-dom): ^19.0.0
 - [sonner](https://www.npmjs.com/package/sonner): ^2.0.7
-- [stripe](https://www.npmjs.com/package/stripe): ^20.3.1
 - [tailwind-merge](https://www.npmjs.com/package/tailwind-merge): ^2.0.0
 - [tailwindcss](https://www.npmjs.com/package/tailwindcss): ^3.3.0
 - [tailwindcss-animate](https://www.npmjs.com/package/tailwindcss-animate): ^1.0.7
