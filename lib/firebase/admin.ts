@@ -2,7 +2,7 @@ import { getApps, initializeApp, cert, type ServiceAccount } from "firebase-admi
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
-function getServiceAccount(): ServiceAccount {
+function getServiceAccount(): ServiceAccount | null {
   const path = require("path");
   const fs = require("fs");
   const filePath = path.join(process.cwd(), "plovo-56748-firebase-adminsdk-fbsvc-158ad41f8b.json");
@@ -14,12 +14,8 @@ function getServiceAccount(): ServiceAccount {
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
   if (!serviceAccountJson) {
-    console.warn("Missing FIREBASE_SERVICE_ACCOUNT_KEY environment variable. Using dummy credentials to prevent build failure.");
-    return {
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "dummy-project-id",
-      clientEmail: "dummy@dummy.com",
-      privateKey: "-----BEGIN PRIVATE KEY-----\ndummy\n-----END PRIVATE KEY-----\n",
-    } as ServiceAccount;
+    console.warn("Missing FIREBASE_SERVICE_ACCOUNT_KEY environment variable. Skipping Firebase Admin initialization.");
+    return null;
   }
 
   let serviceAccount: ServiceAccount;
@@ -35,16 +31,19 @@ function getServiceAccount(): ServiceAccount {
 
 function initializeFirebaseAdmin() {
   if (getApps().length === 0) {
-    initializeApp({
-      credential: cert(getServiceAccount()),
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    });
+    const serviceAccount = getServiceAccount();
+    if (serviceAccount) {
+      initializeApp({
+        credential: cert(serviceAccount),
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      });
+    }
   }
 }
 
 initializeFirebaseAdmin();
 
-const adminDb = getFirestore();
-const adminAuth = getAuth();
+const adminDb = (getApps().length > 0 ? getFirestore() : {}) as ReturnType<typeof getFirestore>;
+const adminAuth = (getApps().length > 0 ? getAuth() : {}) as ReturnType<typeof getAuth>;
 
 export { adminDb, adminAuth };
