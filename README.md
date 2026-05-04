@@ -103,6 +103,7 @@ plovo/
   |- .env/.env.local
   |- .eslintrc.json
   |- .gitignore
+  |- .npmrc
   |- components.json
   |- middleware.ts
   |- next.config.js
