@@ -51,7 +51,7 @@ export const WorkspaceSwitcher = () => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="max-w-[130px] md:max-w-[200px] justify-between"
         >
           <span className="truncate">{activeWorkspace?.name || "Select workspace"}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

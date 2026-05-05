@@ -9,7 +9,7 @@ export const Navbar = () => {
       <div className="md:max-w-screen-2xl mx-auto flex items-center w-full justify-between">
         <Logo />
 
-        <div className="space-x-4 md:w-auto flex items-center justify-between w-full">
+        <div className="space-x-4 flex items-center justify-between w-auto">
           <Link
             href="/sign-in"
             className={buttonVariants({ size: "sm", variant: "outline" })}
