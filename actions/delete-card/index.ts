@@ -53,6 +53,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     await deleteCardDb(id);
+    revalidatePath(`/board/${boardId}`);
     return { data: card };
   } catch {
     return { error: "Failed to delete." };

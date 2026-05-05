@@ -48,7 +48,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       userName: (ctx.user?.displayName as string) || "",
     });
 
-    return { data: { ...list, title } };
+    revalidatePath(`/board/${boardId}`);
+    return { data: { ...list, title }; };
   } catch {
     return { error: "Failed to update." };
   }

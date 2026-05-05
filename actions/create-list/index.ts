@@ -54,6 +54,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       userName: (ctx.user?.displayName as string) || "",
     });
 
+    revalidatePath(`/board/${boardId}`);
     return { data: list };
   } catch (error) {
     console.error("createList action error:", error);

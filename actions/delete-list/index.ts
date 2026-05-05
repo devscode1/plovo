@@ -47,6 +47,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     await deleteListDb(id);
+    revalidatePath(`/board/${boardId}`);
     return { data: list };
   } catch {
     return { error: "Failed to delete." };

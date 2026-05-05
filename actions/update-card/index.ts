@@ -54,7 +54,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       userName: (ctx.user?.displayName as string) || "",
     });
 
-    return { data: { ...card, ...values } };
+    revalidatePath(`/board/${boardId}`);
+    return { data: { ...card, ...values }; };
   } catch {
     return { error: "Failed to update." };
   }

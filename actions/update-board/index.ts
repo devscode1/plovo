@@ -40,9 +40,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       userName: (ctx.user?.displayName as string) || "",
     });
 
-    return {
-      data: { ...board, title },
-    };
+    revalidatePath(/board/${id});
+    revalidatePath(/organization/${orgId});
+    return { data: { ...board, title } };
   } catch {
     return {
       error: "Failed to update.",
