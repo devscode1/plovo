@@ -2,11 +2,24 @@ import { getApps, initializeApp, cert, type ServiceAccount } from "firebase-admi
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
+import fs from "fs";
+import path from "path";
+
 function getServiceAccount(): ServiceAccount {
-  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  let serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
   if (!serviceAccountJson) {
     throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_KEY environment variable.");
+  }
+
+  // If it's a file path (ends with .json), read the file contents
+  if (serviceAccountJson.trim().endsWith(".json")) {
+    try {
+      const fullPath = path.resolve(process.cwd(), serviceAccountJson.trim());
+      serviceAccountJson = fs.readFileSync(fullPath, "utf8");
+    } catch (err) {
+      throw new Error(`Failed to read FIREBASE_SERVICE_ACCOUNT_KEY file at ${serviceAccountJson}`);
+    }
   }
 
   try {
@@ -15,8 +28,8 @@ function getServiceAccount(): ServiceAccount {
       account.private_key = account.private_key.replace(/\\n/g, '\n');
     }
     return account as ServiceAccount;
-  } catch {
-    throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY");
+  } catch (err) {
+    throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON string");
   }
 }
 
