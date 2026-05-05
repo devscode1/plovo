@@ -54,8 +54,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     return { data: list };
-  } catch {
-    return { error: "Failed to create." };
+  } catch (error) {
+    console.error("createList action error:", error);
+    return { error: `Failed to create list: ${error instanceof Error ? error.message : String(error)}` };
   }
 };
 
