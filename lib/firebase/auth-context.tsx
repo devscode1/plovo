@@ -67,27 +67,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
+        // Always sync the session cookie with the latest token
+        const token = await firebaseUser.getIdToken();
+        document.cookie = `__session=${token}; path=/; max-age=3600; SameSite=Lax`;
         await fetchProfile(firebaseUser);
       } else {
+        document.cookie = `__session=; path=/; max-age=0; path=/`;
         setProfile(null);
       }
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Proactively refresh the token every 55 minutes to prevent expiry
+    const refreshInterval = setInterval(async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const token = await currentUser.getIdToken(true);
+        document.cookie = `__session=${token}; path=/; max-age=3600; SameSite=Lax`;
+      }
+    }, 55 * 60 * 1000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(refreshInterval);
+    };
   }, [fetchProfile]);
 
   const signIn = async (email: string, password: string) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const token = await userCredential.user.getIdToken();
-    document.cookie = `__session=${token}; path=/; max-age=3600`;
+    document.cookie = `__session=${token}; path=/; max-age=3600; SameSite=Lax`;
   };
 
   const signUp = async (email: string, password: string, displayName: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(userCredential.user, { displayName });
     const token = await userCredential.user.getIdToken();
-    document.cookie = `__session=${token}; path=/; max-age=3600`;
+    document.cookie = `__session=${token}; path=/; max-age=3600; SameSite=Lax`;
   };
 
   const signOut = async () => {
