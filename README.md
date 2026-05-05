@@ -113,6 +113,7 @@ plovo/
   |- refactor-serialize.ts
   |- service-account-base64.txt
   |- tailwind.config.ts
+  |- test-index.ts
   |- test.ts
   |- tsconfig.json
   |- types.ts
