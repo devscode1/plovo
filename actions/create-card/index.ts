@@ -59,8 +59,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     return { data: card };
-  } catch {
-    return { error: "Failed to create." };
+  } catch (error) {
+    console.error("createCard action error:", error);
+    return { error: `Failed to create card: ${error instanceof Error ? error.message : String(error)}` };
   }
 };
 

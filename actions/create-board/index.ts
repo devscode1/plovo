@@ -56,9 +56,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       userImage: (ctx.user?.photoURL as string) || "",
       userName: (ctx.user?.displayName as string) || "",
     });
-  } catch {
+  } catch (error) {
+    console.error("createBoard action error:", error);
     return {
-      error: "Failed to create",
+      error: `Failed to create board: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
 
