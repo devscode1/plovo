@@ -10,8 +10,7 @@ function getServiceAccount(): ServiceAccount {
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const account: any = JSON.parse(serviceAccountJson);
+    const account: Record<string, string> = JSON.parse(serviceAccountJson);
     if (account.private_key) {
       account.private_key = account.private_key.replace(/\\n/g, '\n');
     }
