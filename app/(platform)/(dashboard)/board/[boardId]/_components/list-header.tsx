@@ -72,6 +72,7 @@ export const ListHeader = ({ data, onAddCard, isAdmin }: ListHeaderProps) => {
 
   useEventListener("keydown", onKeyDown);
 
+  return (
     <div className="pt-2 px-2 text-sm font-semibold flex justify-between items-start gap-x-2">
       {isEditing ? (
         <form ref={formRef} action={onSubmit} className="flex-1 px-[2px]">
