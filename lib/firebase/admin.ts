@@ -25,7 +25,10 @@ function getServiceAccount(): ServiceAccount {
   try {
     const account: Record<string, string> = JSON.parse(serviceAccountJson);
     if (account.private_key) {
-      account.private_key = account.private_key.replace(/\\n/g, '\n');
+      account.private_key = account.private_key
+        .replace(/\\n/g, '\n')
+        .replace(/\r/g, '')
+        .trim();
     }
     return account as ServiceAccount;
   } catch (err) {
