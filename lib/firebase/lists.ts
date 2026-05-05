@@ -1,4 +1,5 @@
 import { getAdminDb } from "@/lib/firebase/admin";
+import { convertTimestamps } from "@/lib/firebase/utils";
 
 export interface List {
   id: string;
@@ -27,13 +28,13 @@ export async function getLists(boardId: string): Promise<List[]> {
     .orderBy("order", "asc")
     .get();
 
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as List[];
+  return snapshot.docs.map((doc) => convertTimestamps<List>({ id: doc.id, ...doc.data() }));
 }
 
 export async function getList(listId: string): Promise<List | null> {
   const doc = await getAdminDb().collection("lists").doc(listId).get();
   if (!doc.exists) return null;
-  return { id: doc.id, ...doc.data() } as List;
+  return convertTimestamps<List>({ id: doc.id, ...doc.data() });
 }
 
 export async function updateList(listId: string, data: Partial<List>): Promise<void> {

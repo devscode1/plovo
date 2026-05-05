@@ -1,4 +1,5 @@
 import { getAdminDb } from "@/lib/firebase/admin";
+import { convertTimestamps } from "@/lib/firebase/utils";
 
 export interface Board {
   id: string;
@@ -31,13 +32,13 @@ export async function getBoards(orgId: string): Promise<Board[]> {
     .orderBy("createdAt", "desc")
     .get();
 
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Board[];
+  return snapshot.docs.map((doc) => convertTimestamps<Board>({ id: doc.id, ...doc.data() }));
 }
 
 export async function getBoard(boardId: string): Promise<Board | null> {
   const doc = await getAdminDb().collection("boards").doc(boardId).get();
   if (!doc.exists) return null;
-  return { id: doc.id, ...doc.data() } as Board;
+  return convertTimestamps<Board>({ id: doc.id, ...doc.data() });
 }
 
 export async function updateBoard(boardId: string, data: Partial<Board>): Promise<void> {

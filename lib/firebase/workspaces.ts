@@ -1,4 +1,5 @@
 import { getAdminDb } from "@/lib/firebase/admin";
+import { convertTimestamps } from "@/lib/firebase/utils";
 
 export interface Workspace {
   id: string;
@@ -66,16 +67,16 @@ export async function getWorkspaces(userId: string): Promise<Workspace[]> {
     .where("__name__", "in", workspaceIds.slice(0, 10))
     .get();
 
-  return workspacesSnapshot.docs.map((doc) => ({
+  return workspacesSnapshot.docs.map((doc) => convertTimestamps<Workspace>({
     id: doc.id,
     ...doc.data(),
-  })) as Workspace[];
+  }));
 }
 
 export async function getWorkspace(workspaceId: string): Promise<Workspace | null> {
   const doc = await getAdminDb().collection("workspaces").doc(workspaceId).get();
   if (!doc.exists) return null;
-  return { id: doc.id, ...doc.data() } as Workspace;
+  return convertTimestamps<Workspace>({ id: doc.id, ...doc.data() });
 }
 
 export async function getWorkspaceMembers(workspaceId: string): Promise<WorkspaceMember[]> {
@@ -86,7 +87,7 @@ export async function getWorkspaceMembers(workspaceId: string): Promise<Workspac
     .orderBy("createdAt", "asc")
     .get();
 
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as WorkspaceMember[];
+  return snapshot.docs.map((doc) => convertTimestamps<WorkspaceMember>({ id: doc.id, ...doc.data() }));
 }
 
 export async function isWorkspaceMember(workspaceId: string, userId: string): Promise<boolean> {

@@ -1,4 +1,5 @@
 import { getAdminDb } from "@/lib/firebase/admin";
+import { convertTimestamps } from "@/lib/firebase/utils";
 
 export interface Card {
   id: string;
@@ -29,13 +30,13 @@ export async function getCards(listId: string): Promise<Card[]> {
     .orderBy("order", "asc")
     .get();
 
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Card[];
+  return snapshot.docs.map((doc) => convertTimestamps<Card>({ id: doc.id, ...doc.data() }));
 }
 
 export async function getCard(cardId: string): Promise<Card | null> {
   const doc = await getAdminDb().collection("cards").doc(cardId).get();
   if (!doc.exists) return null;
-  return { id: doc.id, ...doc.data() } as Card;
+  return convertTimestamps<Card>({ id: doc.id, ...doc.data() });
 }
 
 export async function updateCard(cardId: string, data: Partial<Card>): Promise<void> {

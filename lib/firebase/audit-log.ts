@@ -1,4 +1,5 @@
 import { getAdminDb } from "@/lib/firebase/admin";
+import { convertTimestamps } from "@/lib/firebase/utils";
 
 export type ActionType = "CREATE" | "UPDATE" | "DELETE";
 export type EntityType = "BOARD" | "LIST" | "CARD";
@@ -46,5 +47,5 @@ export async function getAuditLogs(orgId: string): Promise<AuditLog[]> {
     .limit(50)
     .get();
 
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as AuditLog[];
+  return snapshot.docs.map((doc) => convertTimestamps<AuditLog>({ id: doc.id, ...doc.data() }));
 }
