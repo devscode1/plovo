@@ -6,33 +6,18 @@ import fs from "fs";
 import path from "path";
 
 function getServiceAccount(): ServiceAccount {
-  let serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!serviceAccountJson) {
-    throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_KEY environment variable.");
-  }
-
-  // If it's a file path (ends with .json), read the file contents
-  if (serviceAccountJson.trim().endsWith(".json")) {
-    try {
-      const fullPath = path.resolve(process.cwd(), serviceAccountJson.trim());
-      serviceAccountJson = fs.readFileSync(fullPath, "utf8");
-    } catch (err) {
-      throw new Error(`Failed to read FIREBASE_SERVICE_ACCOUNT_KEY file at ${serviceAccountJson}`);
-    }
+  const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE64;
+  
+  if (!serviceAccountBase64) {
+    throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_KEY_BASE64 environment variable.");
   }
 
   try {
-    const account: Record<string, string> = JSON.parse(serviceAccountJson);
-    if (account.private_key) {
-      account.private_key = account.private_key
-        .replace(/\\n/g, '\n')
-        .replace(/\r/g, '')
-        .trim();
-    }
-    return account as ServiceAccount;
-  } catch (err) {
-    throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON string");
+    const json = Buffer.from(serviceAccountBase64, 'base64').toString('utf8');
+    const account = JSON.parse(json) as ServiceAccount;
+    return account;
+  } catch (error) {
+    throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY_BASE64: " + error);
   }
 }
 
