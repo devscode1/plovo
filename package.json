@@ -68,6 +68,7 @@
     "lodash": "^4.17.23",
     "lucide-react": "^0.574.0",
     "next": "^15.5.15",
+    "nodemailer": "^8.0.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sonner": "^2.0.7",
@@ -80,6 +81,7 @@
   "devDependencies": {
     "@types/lodash": "^4.17.23",
     "@types/node": "^22.0.0",
+    "@types/nodemailer": "^8.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.24",

@@ -10,6 +10,7 @@ export interface Board {
   imageFullUrl: string;
   imageUserName: string;
   imageLinkHtml: string;
+  members?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +18,7 @@ export interface Board {
 export async function createBoard(data: Omit<Board, "id" | "createdAt" | "updatedAt">): Promise<Board> {
   const boardData = {
     ...data,
+    members: [],
     createdAt: new Date(),
     updatedAt: new Date(),
   };

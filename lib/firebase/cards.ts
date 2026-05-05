@@ -7,6 +7,7 @@ export interface Card {
   order: number;
   description: string | null;
   listId: string;
+  assignedTo?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

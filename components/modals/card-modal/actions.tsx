@@ -1,15 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-import { Copy, Trash } from "lucide-react";
+import { Copy, Trash, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import type { CardWithList } from "@/types";
 import { copyCard } from "@/actions/copy-card";
 import { deleteCard } from "@/actions/delete-card";
+import { assignCardMember } from "@/actions/assign-card-member";
 import { useAction } from "@/hooks/use-action";
 import { useCardModal } from "@/hooks/use-card-modal";
 
@@ -64,9 +72,69 @@ export const Actions = ({ data }: ActionsProps) => {
     });
   };
 
+  const [assignEmail, setAssignEmail] = useState(data.assignedTo || "");
+  const { execute: executeAssign, isLoading: isLoadingAssign } = useAction(
+    assignCardMember,
+    {
+      onSuccess: () => {
+        toast.success(`Assigned to ${assignEmail}`);
+      },
+      onError: (error) => {
+        toast.error(error);
+      },
+    }
+  );
+
+  const onAssign = (e: React.FormEvent) => {
+    e.preventDefault();
+    const boardId = params.boardId as string;
+    executeAssign({
+      boardId,
+      cardId: data.id,
+      email: assignEmail,
+    });
+  };
+
   return (
     <div className="space-y-2 mt-2">
       <p className="text-xs font-semibold">Actions</p>
+
+      {data.assignedTo && (
+        <p className="text-xs text-neutral-500 mb-2 truncate">
+          Assigned to: {data.assignedTo}
+        </p>
+      )}
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="gray"
+            className="w-full justify-start"
+            size="inline"
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Assign
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="px-4 py-3" side="bottom" align="start">
+          <div className="text-sm font-medium text-center text-neutral-600 pb-4">
+            Assign Member
+          </div>
+          <form onSubmit={onAssign} className="space-y-4">
+            <Input
+              placeholder="Email address"
+              type="email"
+              value={assignEmail}
+              onChange={(e) => setAssignEmail(e.target.value)}
+              disabled={isLoadingAssign}
+              required
+            />
+            <Button type="submit" disabled={isLoadingAssign} className="w-full">
+              Assign & Notify
+            </Button>
+          </form>
+        </PopoverContent>
+      </Popover>
 
       <Button
         onClick={onCopy}
