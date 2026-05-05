@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { ListContainer } from "./_components/list-container";
 import { getLists } from "@/lib/firebase/lists";
 import { getCards } from "@/lib/firebase/cards";
-import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { getAuthContext } from "@/lib/firebase/auth-helpers";
 import { getBoard } from "@/lib/firebase/boards";
 
 type BoardIdPageProps = {
@@ -12,14 +12,8 @@ type BoardIdPageProps = {
 };
 
 const BoardIdPage = async ({ params }: BoardIdPageProps) => {
-  let orgId: string | null = null;
-
-  try {
-    const ctx = await requireAuthContext();
-    orgId = ctx.orgId;
-  } catch {
-    orgId = null;
-  }
+  const ctx = await getAuthContext();
+  const orgId = ctx.orgId;
 
   if (!orgId) redirect("/select-workspace");
 

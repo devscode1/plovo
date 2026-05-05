@@ -1,6 +1,2 @@
-import { createApi } from "unsplash-js";
-
-export const unsplash = createApi({
-  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY!,
-  fetch: fetch,
-});
+// This file is intentionally empty. Unsplash has been replaced with CSS gradients.
+// See constants/images.ts for the gradient-based board backgrounds.

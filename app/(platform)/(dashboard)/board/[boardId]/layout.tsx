@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { BoardNavbar } from "./_components/board-navbar";
 import { getBoard } from "@/lib/firebase/boards";
 import { getLists } from "@/lib/firebase/lists";
-import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { getAuthContext } from "@/lib/firebase/auth-helpers";
 
 export async function generateMetadata({
   params,
@@ -28,14 +28,8 @@ const BoardIdLayout = async ({
   children: React.ReactNode;
   params: Promise<{ boardId: string }>;
 }) => {
-  let orgId: string | null = null;
-
-  try {
-    const ctx = await requireAuthContext();
-    orgId = ctx.orgId;
-  } catch {
-    orgId = null;
-  }
+  const ctx = await getAuthContext();
+  const orgId = ctx.orgId;
 
   if (!orgId) redirect("/select-workspace");
 

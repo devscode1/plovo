@@ -4,17 +4,11 @@ import { User2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormPopover } from "@/components/form/form-popover";
 import { getBoards } from "@/lib/firebase/boards";
-import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { getAuthContext } from "@/lib/firebase/auth-helpers";
 
 export const BoardList = async () => {
-  let orgId: string | null = null;
-
-  try {
-    const ctx = await requireAuthContext();
-    orgId = ctx.orgId;
-  } catch {
-    orgId = null;
-  }
+  const ctx = await getAuthContext();
+  const orgId = ctx.orgId;
 
   if (!orgId) {
     const boards: { id: string; imageThumbUrl: string; title: string }[] = [];
@@ -29,7 +23,7 @@ export const BoardList = async () => {
             <Link
               key={board.id}
               href={`/board/${board.id}`}
-              style={{ backgroundImage: `url(${board.imageThumbUrl})` }}
+              style={{ background: board.imageThumbUrl }}
               className="group relative aspect-video bg-no-repeat bg-center bg-cover bg-sky-700 rounded-sm h-full w-full p-2 overflow-hidden"
             >
               <div
@@ -67,7 +61,7 @@ export const BoardList = async () => {
           <Link
             key={board.id}
             href={`/board/${board.id}`}
-            style={{ backgroundImage: `url(${board.imageThumbUrl})` }}
+            style={{ background: board.imageThumbUrl }}
             className="group relative aspect-video bg-no-repeat bg-center bg-cover bg-sky-700 rounded-sm h-full w-full p-2 overflow-hidden"
           >
             <div

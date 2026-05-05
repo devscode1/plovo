@@ -2,17 +2,11 @@ import { redirect } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ActivityItem } from "@/components/activity-item";
 import { getAuditLogs } from "@/lib/firebase/audit-log";
-import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { getAuthContext } from "@/lib/firebase/auth-helpers";
 
 export const ActivityList = async () => {
-  let orgId: string | null = null;
-
-  try {
-    const ctx = await requireAuthContext();
-    orgId = ctx.orgId;
-  } catch {
-    orgId = null;
-  }
+  const ctx = await getAuthContext();
+  const orgId = ctx.orgId;
 
   if (!orgId) return redirect("/select-workspace");
 
