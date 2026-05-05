@@ -38,12 +38,16 @@ const BoardIdLayout = async ({
   const board = await getBoard(boardId);
   if (!board) notFound();
 
+  const { getUserRole } = await import("@/lib/firebase/workspaces");
+  const role = ctx.userId ? await getUserRole(board.orgId, ctx.userId) : null;
+  const isAdmin = role === "owner" || role === "admin";
+
   return (
     <div
       style={{ background: board.imageFullUrl }}
       className="relative h-full bg-no-repeat bg-cover bg-center"
     >
-      <BoardNavbar data={board} />
+      <BoardNavbar data={board} isAdmin={isAdmin} />
       <div aria-hidden className="absolute inset-0 bg-black/10" />
       <main className="relative pt-28 h-full">{children}</main>
     </div>

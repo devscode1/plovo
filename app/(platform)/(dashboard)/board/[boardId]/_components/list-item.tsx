@@ -12,9 +12,10 @@ import { cn } from "@/lib/utils";
 type ListItemProps = {
   data: ListWithCards;
   index: number;
+  isAdmin?: boolean;
 };
 
-export const ListItem = ({ data, index }: ListItemProps) => {
+export const ListItem = ({ data, index, isAdmin }: ListItemProps) => {
   const textareaRef = useRef<ElementRef<"textarea">>(null);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -31,7 +32,7 @@ export const ListItem = ({ data, index }: ListItemProps) => {
   };
 
   return (
-    <Draggable draggableId={data.id} index={index}>
+    <Draggable draggableId={data.id} index={index} isDragDisabled={!isAdmin}>
       {(provided) => (
         <li
           {...provided.draggableProps}
@@ -42,9 +43,9 @@ export const ListItem = ({ data, index }: ListItemProps) => {
             {...provided.dragHandleProps}
             className="w-full rounded-md bg-[#f2f2f4] shadow-md pb-2"
           >
-            <ListHeader onAddCard={enableEditing} data={data} />
+            <ListHeader onAddCard={enableEditing} data={data} isAdmin={isAdmin} />
 
-            <Droppable droppableId={data.id} type="card">
+            <Droppable droppableId={data.id} type="card" isDropDisabled={!isAdmin}>
               {(provided) => (
                 <ol
                   {...provided.droppableProps}
@@ -63,13 +64,15 @@ export const ListItem = ({ data, index }: ListItemProps) => {
               )}
             </Droppable>
 
-            <CardForm
-              listId={data.id}
-              ref={textareaRef}
-              isEditing={isEditing}
-              enableEditing={enableEditing}
-              disableEditing={disableEditing}
-            />
+            {isAdmin && (
+              <CardForm
+                listId={data.id}
+                ref={textareaRef}
+                isEditing={isEditing}
+                enableEditing={enableEditing}
+                disableEditing={disableEditing}
+              />
+            )}
           </div>
         </li>
       )}

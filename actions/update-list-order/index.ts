@@ -6,6 +6,7 @@ import { InputType, ReturnType } from "./types";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { updateListOrder as updateListOrderDb } from "@/lib/firebase/lists";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { requireAdminRole } from "@/lib/firebase/workspaces";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();
@@ -13,6 +14,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   if (!orgId) {
     return { error: "Unauthorized" };
+  }
+
+  try {
+    await requireAdminRole(orgId, ctx.userId);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unauthorized - Admin access required" };
   }
 
   const { items, boardId } = data;

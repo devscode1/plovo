@@ -7,6 +7,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { createAuditLog } from "@/lib/firebase/audit-log";
 import { updateBoard as updateBoardDb, getBoard } from "@/lib/firebase/boards";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { requireAdminRole } from "@/lib/firebase/workspaces";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();

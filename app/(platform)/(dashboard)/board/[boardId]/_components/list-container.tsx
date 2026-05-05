@@ -14,6 +14,7 @@ import { updateCardOrder } from "@/actions/update-card-order";
 type ListContainerProps = {
   data: ListWithCards[];
   boardId: string;
+  isAdmin?: boolean;
 };
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number) {
@@ -149,8 +150,8 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="lists" type="list" direction="horizontal">
+    <DragDropContext onDragEnd={isAdmin ? onDragEnd : () => {}}>
+      <Droppable droppableId="lists" type="list" direction="horizontal" isDropDisabled={!isAdmin}>
         {(provided) => (
           <ol
             {...provided.droppableProps}
@@ -158,12 +159,12 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
             className="flex gap-x-3 h-full"
           >
             {orderedData.map((list, i) => (
-              <ListItem key={list.id} index={i} data={list} />
+              <ListItem key={list.id} index={i} data={list} isAdmin={isAdmin} />
             ))}
 
             {provided.placeholder}
 
-            <ListForm />
+            {isAdmin && <ListForm />}
             <div aria-hidden className="flex-shrink-0 w-1" />
           </ol>
         )}

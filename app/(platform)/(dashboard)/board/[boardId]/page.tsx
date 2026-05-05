@@ -24,6 +24,10 @@ const BoardIdPage = async ({ params }: BoardIdPageProps) => {
 
   const lists = await getLists(boardId);
 
+  const { getUserRole } = await import("@/lib/firebase/workspaces");
+  const role = ctx.userId ? await getUserRole(board.orgId, ctx.userId) : null;
+  const isAdmin = role === "owner" || role === "admin";
+
   const listsWithCards = await Promise.all(
     lists.map(async (list) => {
       const cards = await getCards(list.id);
@@ -33,7 +37,7 @@ const BoardIdPage = async ({ params }: BoardIdPageProps) => {
 
   return (
     <div className="p-4 h-full overflow-x-auto">
-      <ListContainer boardId={boardId} data={listsWithCards} />
+      <ListContainer boardId={boardId} data={listsWithCards} isAdmin={isAdmin} />
     </div>
   );
 };

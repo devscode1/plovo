@@ -13,9 +13,10 @@ import { updateList } from "@/actions/update-list";
 type ListHeaderProps = {
   data: List;
   onAddCard: () => void;
+  isAdmin?: boolean;
 };
 
-export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
+export const ListHeader = ({ data, onAddCard, isAdmin }: ListHeaderProps) => {
   const [title, setTitle] = useState(data.title);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -71,7 +72,6 @@ export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
 
   useEventListener("keydown", onKeyDown);
 
-  return (
     <div className="pt-2 px-2 text-sm font-semibold flex justify-between items-start gap-x-2">
       {isEditing ? (
         <form ref={formRef} action={onSubmit} className="flex-1 px-[2px]">
@@ -103,14 +103,14 @@ export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
         </form>
       ) : (
         <div
-          onClick={enableEditing}
-          className="w-full text-sm px-2.5 py-1 h-7 font-medium border-transparent cursor-text"
+          onClick={isAdmin ? enableEditing : undefined}
+          className={`w-full text-sm px-2.5 py-1 h-7 font-medium border-transparent ${isAdmin ? "cursor-text" : "cursor-default"}`}
         >
           {data.title}
         </div>
       )}
 
-      <ListOptions data={data} onAddCard={onAddCard} />
+      {isAdmin && <ListOptions data={data} onAddCard={onAddCard} />}
     </div>
   );
 };

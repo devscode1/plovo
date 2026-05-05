@@ -108,9 +108,9 @@ export const Description = ({ data }: DescriptionProps) => {
           </form>
         ) : (
           <div
-            onClick={enableEditing}
-            role="button"
-            className="min-h-[78px] bg-neutral-200 text-sm font-medium py-3 px-3.5 rounded-md"
+            onClick={data.isAdmin ? enableEditing : undefined}
+            role={data.isAdmin ? "button" : "presentation"}
+            className={`min-h-[78px] bg-neutral-200 text-sm font-medium py-3 px-3.5 rounded-md ${!data.isAdmin && "cursor-default"}`}
           >
             {data.description || "Add a more detailed description..."}
           </div>

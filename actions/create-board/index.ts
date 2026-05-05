@@ -7,6 +7,7 @@ import { CreateBoard } from "@/actions/create-board/schema";
 import { createAuditLog } from "@/lib/firebase/audit-log";
 import { createBoard as createBoardDb } from "@/lib/firebase/boards";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { requireAdminRole } from "@/lib/firebase/workspaces";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();

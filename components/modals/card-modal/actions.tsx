@@ -105,58 +105,62 @@ export const Actions = ({ data }: ActionsProps) => {
         </p>
       )}
 
-      <Popover>
-        <PopoverTrigger asChild>
+      {data.isAdmin && (
+        <>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="gray"
+                className="w-full justify-start"
+                size="inline"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Assign
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="px-4 py-3" side="bottom" align="start">
+              <div className="text-sm font-medium text-center text-neutral-600 pb-4">
+                Assign Member
+              </div>
+              <form onSubmit={onAssign} className="space-y-4">
+                <Input
+                  placeholder="Email address"
+                  type="email"
+                  value={assignEmail}
+                  onChange={(e) => setAssignEmail(e.target.value)}
+                  disabled={isLoadingAssign}
+                  required
+                />
+                <Button type="submit" disabled={isLoadingAssign} className="w-full">
+                  Assign & Notify
+                </Button>
+              </form>
+            </PopoverContent>
+          </Popover>
+
           <Button
+            onClick={onCopy}
+            disabled={isLoadingCopy}
             variant="gray"
             className="w-full justify-start"
             size="inline"
           >
-            <UserPlus className="h-4 w-4 mr-2" />
-            Assign
+            <Copy className="h-4 w-4 mr-2" />
+            Copy
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="px-4 py-3" side="bottom" align="start">
-          <div className="text-sm font-medium text-center text-neutral-600 pb-4">
-            Assign Member
-          </div>
-          <form onSubmit={onAssign} className="space-y-4">
-            <Input
-              placeholder="Email address"
-              type="email"
-              value={assignEmail}
-              onChange={(e) => setAssignEmail(e.target.value)}
-              disabled={isLoadingAssign}
-              required
-            />
-            <Button type="submit" disabled={isLoadingAssign} className="w-full">
-              Assign & Notify
-            </Button>
-          </form>
-        </PopoverContent>
-      </Popover>
 
-      <Button
-        onClick={onCopy}
-        disabled={isLoadingCopy}
-        variant="gray"
-        className="w-full justify-start"
-        size="inline"
-      >
-        <Copy className="h-4 w-4 mr-2" />
-        Copy
-      </Button>
-
-      <Button
-        onClick={onDelete}
-        disabled={isLoadingDelete}
-        variant="destructive"
-        className="w-full justify-start"
-        size="inline"
-      >
-        <Trash className="h-4 w-4 mr-2" />
-        Delete
-      </Button>
+          <Button
+            onClick={onDelete}
+            disabled={isLoadingDelete}
+            variant="destructive"
+            className="w-full justify-start"
+            size="inline"
+          >
+            <Trash className="h-4 w-4 mr-2" />
+            Delete
+          </Button>
+        </>
+      )}
     </div>
   );
 };

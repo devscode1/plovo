@@ -5,6 +5,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { InputType, ReturnType } from "./types";
 import { InviteBoardMember } from "./schema";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { requireAdminRole } from "@/lib/firebase/workspaces";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { getBoard } from "@/lib/firebase/boards";
 import { sendEmail } from "@/lib/mail";
@@ -15,6 +16,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   if (!orgId) {
     return { error: "Unauthorized" };
+  }
+
+  try {
+    await requireAdminRole(orgId, ctx.userId);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unauthorized - Admin access required" };
   }
 
   const { email, boardId } = data;

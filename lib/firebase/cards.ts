@@ -8,6 +8,7 @@ export interface Card {
   description: string | null;
   listId: string;
   assignedTo?: string | null;
+  isCompleted?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

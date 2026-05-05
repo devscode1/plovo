@@ -25,7 +25,11 @@ export async function GET(
     const board = await getBoard(list.boardId);
     if (!board) return new NextResponse("Board not found", { status: 404 });
 
-    return NextResponse.json({ ...card, list: { title: list.title } });
+    const { getUserRole } = await import("@/lib/firebase/workspaces");
+    const role = await getUserRole(board.orgId, auth.userId);
+    const isAdmin = role === "owner" || role === "admin";
+
+    return NextResponse.json({ ...card, list: { title: list.title }, isAdmin });
   } catch {
     return new NextResponse("Internal Server Error", { status: 500 });
   }

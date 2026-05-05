@@ -114,3 +114,11 @@ export async function getUserRole(workspaceId: string, userId: string): Promise<
   if (snapshot.empty) return null;
   return snapshot.docs[0].data().role;
 }
+
+export async function requireAdminRole(workspaceId: string, userId: string): Promise<boolean> {
+  const role = await getUserRole(workspaceId, userId);
+  if (role !== "owner" && role !== "admin") {
+    throw new Error("Unauthorized - Admin access required");
+  }
+  return true;
+}

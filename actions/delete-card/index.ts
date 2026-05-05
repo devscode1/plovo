@@ -9,6 +9,7 @@ import { deleteCard as deleteCardDb, getCard } from "@/lib/firebase/cards";
 import { getList } from "@/lib/firebase/lists";
 import { getBoard } from "@/lib/firebase/boards";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { requireAdminRole } from "@/lib/firebase/workspaces";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();
@@ -16,6 +17,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   if (!orgId) {
     return { error: "Unauthorized" };
+  }
+
+  try {
+    await requireAdminRole(orgId, ctx.userId);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unauthorized - Admin access required" };
   }
 
   const { id, boardId } = data;

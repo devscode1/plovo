@@ -58,19 +58,56 @@ export const Header = ({ data }: HeaderProps) => {
     });
   };
 
+  const { execute: executeToggle, isLoading: isToggling } = useAction(
+    import("@/actions/toggle-card-completion").then((m) => m.toggleCardCompletion),
+    {
+      onSuccess: (cardData) => {
+        queryClient.invalidateQueries({ queryKey: ["card", cardData.id] });
+        queryClient.invalidateQueries({ queryKey: ["card-logs", cardData.id] });
+        toast.success(`Task marked as ${cardData.isCompleted ? "completed" : "incomplete"}`);
+      },
+      onError: (error) => {
+        toast.error(error);
+      },
+    }
+  );
+
+  const onToggleComplete = () => {
+    executeToggle({
+      id: data.id,
+      boardId: params.boardId as string,
+      isCompleted: !data.isCompleted,
+    });
+  };
+
   return (
     <div className="flex items-start gap-x-3 mb-6 w-full">
       <Layout className="h-5 w-5 mt-1 text-neutral-700" />
       <div className="w-full">
-        <form action={onSubmit}>
-          <FormInput
-            id="title"
-            onBlur={onBlur}
-            ref={inputRef}
-            defaultValue={title}
-            className="font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent relative -left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate"
+        <div className="flex items-center gap-x-2">
+          <input
+            type="checkbox"
+            checked={!!data.isCompleted}
+            onChange={onToggleComplete}
+            disabled={isToggling}
+            className="w-4 h-4 cursor-pointer"
           />
-        </form>
+          {data.isAdmin ? (
+            <form action={onSubmit} className="flex-1">
+              <FormInput
+                id="title"
+                onBlur={onBlur}
+                ref={inputRef}
+                defaultValue={title}
+                className={`font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent relative -left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate ${data.isCompleted ? "line-through text-neutral-500" : ""}`}
+              />
+            </form>
+          ) : (
+            <p className={`font-semibold text-lg px-1 text-neutral-700 mb-0.5 truncate ${data.isCompleted ? "line-through text-neutral-500" : ""}`}>
+              {title}
+            </p>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">
           In list <span className="underline">{data.list.title}</span>
         </p>

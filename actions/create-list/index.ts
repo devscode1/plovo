@@ -8,6 +8,7 @@ import { createAuditLog } from "@/lib/firebase/audit-log";
 import { createList as createListDb } from "@/lib/firebase/lists";
 import { getBoard } from "@/lib/firebase/boards";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
+import { requireAdminRole } from "@/lib/firebase/workspaces";
 import { getAdminDb } from "@/lib/firebase/admin";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
