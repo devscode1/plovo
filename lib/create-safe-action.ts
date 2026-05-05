@@ -24,6 +24,12 @@ export const createSafeAction = <TInput, TOutput>(
       };
     }
 
-    return handler(validationResult.data);
+    try {
+      return await handler(validationResult.data);
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : "Something went wrong",
+      };
+    }
   };
 };
