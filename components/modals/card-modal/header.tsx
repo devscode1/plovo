@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FormInput } from "@/components/form/form-input";
 import { useAction } from "@/hooks/use-action";
 import { updateCard } from "@/actions/update-card";
+import { toggleCardCompletion } from "@/actions/toggle-card-completion";
 import { CardWithList } from "@/types";
 
 type HeaderProps = {
@@ -59,7 +60,7 @@ export const Header = ({ data }: HeaderProps) => {
   };
 
   const { execute: executeToggle, isLoading: isToggling } = useAction(
-    import("@/actions/toggle-card-completion").then((m) => m.toggleCardCompletion),
+    toggleCardCompletion,
     {
       onSuccess: (cardData) => {
         queryClient.invalidateQueries({ queryKey: ["card", cardData.id] });
