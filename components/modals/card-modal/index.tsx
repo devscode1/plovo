@@ -32,7 +32,7 @@ export const CardModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="w-full max-w-[95vw] sm:max-w-[700px] overflow-y-auto max-h-[90vh]">
         {cardData ? <Header data={cardData} /> : <Header.Skeleton />}
 
         <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4">
