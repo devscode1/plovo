@@ -7,6 +7,7 @@ import { InviteBoardMember } from "./schema";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { getBoard } from "@/lib/firebase/boards";
+import { sendEmail } from "@/lib/mail";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();
@@ -32,6 +33,17 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         updatedAt: new Date(),
       });
     }
+
+    // Send email to the invited user
+    await sendEmail({
+      to: email,
+      subject: `You have been invited to a board: ${board.title}`,
+      html: `
+        <h2>You've been invited!</h2>
+        <p><strong>${ctx.user?.displayName || "Someone"}</strong> has invited you to collaborate on the board: <strong>${board.title}</strong></p>
+        <p>Log in to Plovo to view the board.</p>
+      `,
+    });
 
     revalidatePath(`/board/${boardId}`);
     return { data: { success: true } };
