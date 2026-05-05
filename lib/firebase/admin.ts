@@ -2,20 +2,16 @@ import { getApps, initializeApp, cert, type ServiceAccount } from "firebase-admi
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
-import fs from "fs";
-import path from "path";
-
 function getServiceAccount(): ServiceAccount {
   const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE64;
-  
+
   if (!serviceAccountBase64) {
     throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_KEY_BASE64 environment variable.");
   }
 
   try {
     const json = Buffer.from(serviceAccountBase64, 'base64').toString('utf8');
-    const account = JSON.parse(json) as ServiceAccount;
-    return account;
+    return JSON.parse(json) as ServiceAccount;
   } catch (error) {
     throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY_BASE64: " + error);
   }
@@ -35,7 +31,6 @@ export function getAdminDb() {
   ensureInitialized();
   return getFirestore();
 }
-
 export function getAdminAuth() {
   ensureInitialized();
   return getAuth();
