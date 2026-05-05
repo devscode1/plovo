@@ -1,6 +1,6 @@
 import { getApps, initializeApp, cert, type ServiceAccount } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
-import { getAuth } from "firebase-admin/auth";
+import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { getAuth, type Auth } from "firebase-admin/auth";
 
 function getServiceAccount(): ServiceAccount {
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
@@ -10,7 +10,8 @@ function getServiceAccount(): ServiceAccount {
   }
 
   try {
-    const account = JSON.parse(serviceAccountJson);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const account: any = JSON.parse(serviceAccountJson);
     if (account.private_key) {
       account.private_key = account.private_key.replace(/\\n/g, '\n');
     }
@@ -20,7 +21,7 @@ function getServiceAccount(): ServiceAccount {
   }
 }
 
-function initializeFirebaseAdmin() {
+function ensureInitialized() {
   if (getApps().length === 0) {
     const serviceAccount = getServiceAccount();
     initializeApp({
@@ -30,9 +31,28 @@ function initializeFirebaseAdmin() {
   }
 }
 
-initializeFirebaseAdmin();
+// Lazy getters – Firebase Admin is only initialized at runtime, not at import/build time
+let _adminDb: Firestore | null = null;
+let _adminAuth: Auth | null = null;
 
-const adminDb = getFirestore();
-const adminAuth = getAuth();
+const adminDb: Firestore = new Proxy({} as Firestore, {
+  get(_target, prop, receiver) {
+    if (!_adminDb) {
+      ensureInitialized();
+      _adminDb = getFirestore();
+    }
+    return Reflect.get(_adminDb, prop, receiver);
+  },
+});
+
+const adminAuth: Auth = new Proxy({} as Auth, {
+  get(_target, prop, receiver) {
+    if (!_adminAuth) {
+      ensureInitialized();
+      _adminAuth = getAuth();
+    }
+    return Reflect.get(_adminAuth, prop, receiver);
+  },
+});
 
 export { adminDb, adminAuth };

@@ -4,6 +4,8 @@ import { getList } from "@/lib/firebase/lists";
 import { getBoard } from "@/lib/firebase/boards";
 import { verifyAuth } from "@/lib/firebase/server-auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ cardId: string }> },
