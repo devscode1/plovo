@@ -38,7 +38,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const boardUrl = `${appUrl}/board/${boardId}`;
+    const boardUrl = `${appUrl}/api/invite/${boardId}`;
 
     // Send email to the assigned user
     await sendEmail({

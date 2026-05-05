@@ -10,7 +10,7 @@ export async function getAuthContext() {
   }
 
   const userDoc = await getAdminDb().collection("users").doc(authResult.userId).get();
-  const user = userDoc.exists ? userDoc.data() : null;
+  const user = userDoc.exists ? userDoc.data() : { email: authResult.email };
 
   const orgId = await getActiveOrgId();
 
