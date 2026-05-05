@@ -2,20 +2,20 @@ import { cookies } from "next/headers";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import type { DecodedIdToken } from "firebase-admin/auth";
 
-export async function verifyAuth(): Promise<{ userId: string; token: DecodedIdToken } | null> {
+export async function verifyAuth(): Promise<{ userId: string; token: DecodedIdToken }> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("__session")?.value;
 
     if (!token) {
-      return null;
+      throw new Error("No __session cookie found in request");
     }
 
     const decodedToken = await getAdminAuth().verifyIdToken(token);
     return { userId: decodedToken.uid, token: decodedToken };
   } catch (error) {
     console.error("verifyAuth failed:", error);
-    return null;
+    throw new Error(`Auth verification failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

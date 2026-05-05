@@ -5,10 +5,6 @@ import { getActiveOrgId, verifyAuth } from "@/lib/firebase/server-auth";
 export async function getAuthContext() {
   const auth = await verifyAuth();
 
-  if (!auth) {
-    return { userId: null, orgId: null, user: null };
-  }
-
   const userDoc = await getAdminDb().collection("users").doc(auth.userId).get();
   const user = userDoc.exists ? userDoc.data() : null;
 
