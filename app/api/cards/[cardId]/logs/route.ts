@@ -10,7 +10,7 @@ export async function GET(
 ) {
   try {
     const auth = await verifyAuth();
-    if (!auth) return new NextResponse("Unauthorized", { status: 401 });
+    if ("error" in auth) return new NextResponse(auth.error, { status: 401 });
 
     const { cardId } = await params;
 

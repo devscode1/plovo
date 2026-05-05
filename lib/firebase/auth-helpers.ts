@@ -3,21 +3,25 @@ import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { getActiveOrgId, verifyAuth } from "@/lib/firebase/server-auth";
 
 export async function getAuthContext() {
-  const auth = await verifyAuth();
+  const authResult = await verifyAuth();
 
-  const userDoc = await getAdminDb().collection("users").doc(auth.userId).get();
+  if ("error" in authResult) {
+    return { userId: null, orgId: null, user: null, error: authResult.error };
+  }
+
+  const userDoc = await getAdminDb().collection("users").doc(authResult.userId).get();
   const user = userDoc.exists ? userDoc.data() : null;
 
   const orgId = await getActiveOrgId();
 
-  return { userId: auth.userId, orgId, user };
+  return { userId: authResult.userId, orgId, user, error: null };
 }
 
 export async function requireAuthContext() {
   const ctx = await getAuthContext();
 
   if (!ctx.userId) {
-    throw new Error("Unauthorized - Auth verification failed");
+    throw new Error(ctx.error || "Unauthorized - Auth verification failed");
   }
 
   return ctx as { userId: string; orgId: string | null; user: Record<string, unknown> | null };
