@@ -40,8 +40,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       userName: (ctx.user?.displayName as string) || "",
     });
 
-    revalidatePath(/board/${id});
-    revalidatePath(/organization/${orgId});
+    revalidatePath(`/board/${id}`);
+    revalidatePath(`/organization/${orgId}`);
     return { data: { ...board, title } };
   } catch {
     return {
