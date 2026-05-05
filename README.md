@@ -47,6 +47,7 @@ Here is the folder structure of this app.
 ```bash
 plovo/
   |- actions/
+    |-- assign-card-member/
     |-- copy-card/
     |-- copy-list/
     |-- create-board/
@@ -55,6 +56,7 @@ plovo/
     |-- delete-board/
     |-- delete-card/
     |-- delete-list/
+    |-- invite-board-member/
     |-- update-board/
     |-- update-card/
     |-- update-card-order/
@@ -94,6 +96,7 @@ plovo/
     |-- create-safe-action.ts
     |-- fetcher.ts
     |-- generate-log-messages.ts
+    |-- mail.ts
     |-- org-limit.ts
     |-- subscription.ts
     |-- unsplash.ts
@@ -238,6 +241,7 @@ Useful resources and libraries that are used in My Portfolio
 - [@tanstack/react-query](https://www.npmjs.com/package/@tanstack/react-query): ^5.90.21
 - [@types/lodash](https://www.npmjs.com/package/@types/lodash): ^4.17.23
 - [@types/node](https://www.npmjs.com/package/@types/node): ^22.0.0
+- [@types/nodemailer](https://www.npmjs.com/package/@types/nodemailer): ^8.0.0
 - [@types/react](https://www.npmjs.com/package/@types/react): ^19.0.0
 - [@types/react-dom](https://www.npmjs.com/package/@types/react-dom): ^19.0.0
 - [autoprefixer](https://www.npmjs.com/package/autoprefixer): ^10.4.24
@@ -251,6 +255,7 @@ Useful resources and libraries that are used in My Portfolio
 - [lodash](https://www.npmjs.com/package/lodash): ^4.17.23
 - [lucide-react](https://www.npmjs.com/package/lucide-react): ^0.574.0
 - [next](https://www.npmjs.com/package/next): ^15.5.15
+- [nodemailer](https://www.npmjs.com/package/nodemailer): ^8.0.7
 - [postcss](https://www.npmjs.com/package/postcss): ^8
 - [react](https://www.npmjs.com/package/react): ^19.0.0
 - [react-dom](https://www.npmjs.com/package/react-dom): ^19.0.0
