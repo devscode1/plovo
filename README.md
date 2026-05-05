@@ -110,6 +110,7 @@ plovo/
   |- package-lock.json
   |- package.json
   |- postcss.config.js
+  |- service-account-base64.txt
   |- tailwind.config.ts
   |- test.ts
   |- tsconfig.json
