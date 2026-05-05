@@ -47,6 +47,7 @@ Here is the folder structure of this app.
 ```bash
 plovo/
   |- actions/
+    |-- add-workspace-admin/
     |-- assign-card-member/
     |-- copy-card/
     |-- copy-list/
@@ -57,6 +58,7 @@ plovo/
     |-- delete-card/
     |-- delete-list/
     |-- invite-board-member/
+    |-- toggle-card-completion/
     |-- update-board/
     |-- update-card/
     |-- update-card-order/
