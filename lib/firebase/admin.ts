@@ -10,11 +10,11 @@ function getServiceAccount(): ServiceAccount {
   }
 
   try {
-    const account = JSON.parse(serviceAccountJson) as ServiceAccount;
+    const account = JSON.parse(serviceAccountJson);
     if (account.private_key) {
       account.private_key = account.private_key.replace(/\\n/g, '\n');
     }
-    return account;
+    return account as ServiceAccount;
   } catch {
     throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY");
   }
