@@ -37,6 +37,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       updatedAt: new Date(),
     });
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const boardUrl = `${appUrl}/board/${boardId}`;
+
     // Send email to the assigned user
     await sendEmail({
       to: email,
@@ -45,7 +48,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         <h2>You have a new task assigned to you!</h2>
         <p><strong>Board:</strong> ${board.title}</p>
         <p><strong>Task:</strong> ${card.title}</p>
-        <p>Log in to Plovo to view your task details.</p>
+        <br />
+        <a href="${boardUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0079bf; color: white; text-decoration: none; border-radius: 5px;">View Task on Plovo</a>
+        <br /><br />
+        <p>If you don't have an account yet, clicking the link will prompt you to create one first!</p>
       `,
     });
 

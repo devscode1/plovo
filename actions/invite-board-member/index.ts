@@ -34,6 +34,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       });
     }
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const boardUrl = `${appUrl}/board/${boardId}`;
+
     // Send email to the invited user
     await sendEmail({
       to: email,
@@ -41,7 +44,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       html: `
         <h2>You've been invited!</h2>
         <p><strong>${ctx.user?.displayName || "Someone"}</strong> has invited you to collaborate on the board: <strong>${board.title}</strong></p>
-        <p>Log in to Plovo to view the board.</p>
+        <br />
+        <a href="${boardUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0079bf; color: white; text-decoration: none; border-radius: 5px;">View Board on Plovo</a>
+        <br /><br />
+        <p>If you don't have an account yet, clicking the link will prompt you to create one first!</p>
       `,
     });
 
