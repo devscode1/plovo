@@ -111,6 +111,7 @@ plovo/
   |- package.json
   |- postcss.config.js
   |- tailwind.config.ts
+  |- test.ts
   |- tsconfig.json
   |- types.ts
   |- vercel.json
