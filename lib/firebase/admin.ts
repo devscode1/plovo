@@ -35,22 +35,26 @@ let _adminDb: Firestore | null = null;
 let _adminAuth: Auth | null = null;
 
 const adminDb: Firestore = new Proxy({} as Firestore, {
-  get(_target, prop, receiver) {
+  get(_target, prop) {
     if (!_adminDb) {
       ensureInitialized();
       _adminDb = getFirestore();
     }
-    return Reflect.get(_adminDb, prop, receiver);
+    const value = Reflect.get(_adminDb, prop);
+    // Bind functions to the actual Firestore instance to preserve 'this' context
+    return typeof value === "function" ? value.bind(_adminDb) : value;
   },
 });
 
 const adminAuth: Auth = new Proxy({} as Auth, {
-  get(_target, prop, receiver) {
+  get(_target, prop) {
     if (!_adminAuth) {
       ensureInitialized();
       _adminAuth = getAuth();
     }
-    return Reflect.get(_adminAuth, prop, receiver);
+    const value = Reflect.get(_adminAuth, prop);
+    // Bind functions to the actual Auth instance to preserve 'this' context
+    return typeof value === "function" ? value.bind(_adminAuth) : value;
   },
 });
 

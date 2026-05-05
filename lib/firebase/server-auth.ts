@@ -13,7 +13,8 @@ export async function verifyAuth(): Promise<{ userId: string; token: DecodedIdTo
 
     const decodedToken = await adminAuth.verifyIdToken(token);
     return { userId: decodedToken.uid, token: decodedToken };
-  } catch {
+  } catch (error) {
+    console.error("verifyAuth failed:", error);
     return null;
   }
 }
