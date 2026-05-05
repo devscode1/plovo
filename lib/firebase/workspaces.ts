@@ -1,4 +1,4 @@
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 export interface Workspace {
   id: string;
@@ -36,9 +36,9 @@ export async function createWorkspace(
     updatedAt: new Date(),
   };
 
-  const workspaceRef = await adminDb.collection("workspaces").add(workspaceData);
+  const workspaceRef = await getAdminDb().collection("workspaces").add(workspaceData);
 
-  await adminDb.collection("workspaces").doc(workspaceRef.id).collection("members").add({
+  await getAdminDb().collection("workspaces").doc(workspaceRef.id).collection("members").add({
     workspaceId: workspaceRef.id,
     userId,
     email,
@@ -52,7 +52,7 @@ export async function createWorkspace(
 }
 
 export async function getWorkspaces(userId: string): Promise<Workspace[]> {
-  const membersSnapshot = await adminDb
+  const membersSnapshot = await getAdminDb()
     .collectionGroup("members")
     .where("userId", "==", userId)
     .get();
@@ -61,7 +61,7 @@ export async function getWorkspaces(userId: string): Promise<Workspace[]> {
 
   if (workspaceIds.length === 0) return [];
 
-  const workspacesSnapshot = await adminDb
+  const workspacesSnapshot = await getAdminDb()
     .collection("workspaces")
     .where("__name__", "in", workspaceIds.slice(0, 10))
     .get();
@@ -73,13 +73,13 @@ export async function getWorkspaces(userId: string): Promise<Workspace[]> {
 }
 
 export async function getWorkspace(workspaceId: string): Promise<Workspace | null> {
-  const doc = await adminDb.collection("workspaces").doc(workspaceId).get();
+  const doc = await getAdminDb().collection("workspaces").doc(workspaceId).get();
   if (!doc.exists) return null;
   return { id: doc.id, ...doc.data() } as Workspace;
 }
 
 export async function getWorkspaceMembers(workspaceId: string): Promise<WorkspaceMember[]> {
-  const snapshot = await adminDb
+  const snapshot = await getAdminDb()
     .collection("workspaces")
     .doc(workspaceId)
     .collection("members")
@@ -90,7 +90,7 @@ export async function getWorkspaceMembers(workspaceId: string): Promise<Workspac
 }
 
 export async function isWorkspaceMember(workspaceId: string, userId: string): Promise<boolean> {
-  const snapshot = await adminDb
+  const snapshot = await getAdminDb()
     .collection("workspaces")
     .doc(workspaceId)
     .collection("members")
@@ -102,7 +102,7 @@ export async function isWorkspaceMember(workspaceId: string, userId: string): Pr
 }
 
 export async function getUserRole(workspaceId: string, userId: string): Promise<string | null> {
-  const snapshot = await adminDb
+  const snapshot = await getAdminDb()
     .collection("workspaces")
     .doc(workspaceId)
     .collection("members")

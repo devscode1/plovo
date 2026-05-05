@@ -1,4 +1,4 @@
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
 
 type ActionType = "CREATE" | "UPDATE" | "DELETE";
@@ -20,7 +20,7 @@ export const createAuditLog = async (props: Props) => {
 
     const { entityId, entityType, entityTitle, action } = props;
 
-    await adminDb.collection("auditLogs").add({
+    await getAdminDb().collection("auditLogs").add({
       orgId,
       entityId,
       entityType,

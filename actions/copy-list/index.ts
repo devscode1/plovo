@@ -9,7 +9,7 @@ import { createList as createListDb, getList } from "@/lib/firebase/lists";
 import { createCard, getCards } from "@/lib/firebase/cards";
 import { getBoard } from "@/lib/firebase/boards";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();
@@ -32,7 +32,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       return { error: "Board not found" };
     }
 
-    const lastListSnapshot = await adminDb
+    const lastListSnapshot = await getAdminDb()
       .collection("lists")
       .where("boardId", "==", boardId)
       .orderBy("order", "desc")

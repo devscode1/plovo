@@ -14,7 +14,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   if (!orgId) {
     return {
-      error: "Unauthorized",
+      error: "Missing orgId. Please select a workspace.",
     };
   }
 

@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { adminAuth, adminDb } from "@/lib/firebase/admin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { getActiveOrgId, verifyAuth } from "@/lib/firebase/server-auth";
 
 export async function getAuthContext() {
@@ -9,7 +9,7 @@ export async function getAuthContext() {
     return { userId: null, orgId: null, user: null };
   }
 
-  const userDoc = await adminDb.collection("users").doc(auth.userId).get();
+  const userDoc = await getAdminDb().collection("users").doc(auth.userId).get();
   const user = userDoc.exists ? userDoc.data() : null;
 
   const orgId = await getActiveOrgId();
@@ -21,7 +21,7 @@ export async function requireAuthContext() {
   const ctx = await getAuthContext();
 
   if (!ctx.userId) {
-    throw new Error("Unauthorized");
+    throw new Error("Unauthorized - Auth verification failed");
   }
 
   return ctx as { userId: string; orgId: string | null; user: Record<string, unknown> | null };

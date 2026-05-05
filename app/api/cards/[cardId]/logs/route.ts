@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAuth } from "@/lib/firebase/server-auth";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ export async function GET(
 
     const { cardId } = await params;
 
-    const auditLogsSnapshot = await adminDb
+    const auditLogsSnapshot = await getAdminDb()
       .collection("auditLogs")
       .where("entityId", "==", cardId)
       .where("entityType", "==", "CARD")

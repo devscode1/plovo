@@ -1,4 +1,4 @@
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 export interface Board {
   id: string;
@@ -20,12 +20,12 @@ export async function createBoard(data: Omit<Board, "id" | "createdAt" | "update
     updatedAt: new Date(),
   };
 
-  const boardRef = await adminDb.collection("boards").add(boardData);
+  const boardRef = await getAdminDb().collection("boards").add(boardData);
   return { id: boardRef.id, ...boardData };
 }
 
 export async function getBoards(orgId: string): Promise<Board[]> {
-  const snapshot = await adminDb
+  const snapshot = await getAdminDb()
     .collection("boards")
     .where("orgId", "==", orgId)
     .orderBy("createdAt", "desc")
@@ -35,28 +35,28 @@ export async function getBoards(orgId: string): Promise<Board[]> {
 }
 
 export async function getBoard(boardId: string): Promise<Board | null> {
-  const doc = await adminDb.collection("boards").doc(boardId).get();
+  const doc = await getAdminDb().collection("boards").doc(boardId).get();
   if (!doc.exists) return null;
   return { id: doc.id, ...doc.data() } as Board;
 }
 
 export async function updateBoard(boardId: string, data: Partial<Board>): Promise<void> {
-  await adminDb.collection("boards").doc(boardId).update({
+  await getAdminDb().collection("boards").doc(boardId).update({
     ...data,
     updatedAt: new Date(),
   });
 }
 
 export async function deleteBoard(boardId: string): Promise<void> {
-  const listsSnapshot = await adminDb
+  const listsSnapshot = await getAdminDb()
     .collection("lists")
     .where("boardId", "==", boardId)
     .get();
 
-  const batch = adminDb.batch();
+  const batch = getAdminDb().batch();
 
   for (const listDoc of listsSnapshot.docs) {
-    const cardsSnapshot = await adminDb
+    const cardsSnapshot = await getAdminDb()
       .collection("cards")
       .where("listId", "==", listDoc.id)
       .get();
@@ -68,6 +68,6 @@ export async function deleteBoard(boardId: string): Promise<void> {
     batch.delete(listDoc.ref);
   }
 
-  batch.delete(adminDb.collection("boards").doc(boardId));
+  batch.delete(getAdminDb().collection("boards").doc(boardId));
   await batch.commit();
 }

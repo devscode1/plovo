@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { adminAuth, adminDb } from "@/lib/firebase/admin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import type { DecodedIdToken } from "firebase-admin/auth";
 
 export async function verifyAuth(): Promise<{ userId: string; token: DecodedIdToken } | null> {
@@ -11,7 +11,7 @@ export async function verifyAuth(): Promise<{ userId: string; token: DecodedIdTo
       return null;
     }
 
-    const decodedToken = await adminAuth.verifyIdToken(token);
+    const decodedToken = await getAdminAuth().verifyIdToken(token);
     return { userId: decodedToken.uid, token: decodedToken };
   } catch (error) {
     console.error("verifyAuth failed:", error);

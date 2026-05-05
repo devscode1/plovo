@@ -1,4 +1,4 @@
-import { adminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 
 export type ActionType = "CREATE" | "UPDATE" | "DELETE";
 export type EntityType = "BOARD" | "LIST" | "CARD";
@@ -29,7 +29,7 @@ export async function createAuditLog(
     userName: string;
   }
 ): Promise<void> {
-  await adminDb.collection("auditLogs").add({
+  await getAdminDb().collection("auditLogs").add({
     orgId,
     userId,
     ...data,
@@ -39,7 +39,7 @@ export async function createAuditLog(
 }
 
 export async function getAuditLogs(orgId: string): Promise<AuditLog[]> {
-  const snapshot = await adminDb
+  const snapshot = await getAdminDb()
     .collection("auditLogs")
     .where("orgId", "==", orgId)
     .orderBy("createdAt", "desc")
