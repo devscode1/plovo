@@ -88,10 +88,10 @@ export const Header = ({ data }: HeaderProps) => {
   };
 
   return (
-    <div className="flex items-start gap-x-3 mb-6 w-full">
+    <div className="flex items-start gap-x-3 mb-6 w-full pr-8">
       <Layout className="h-5 w-5 mt-1 text-neutral-700" />
-      <div className="w-full">
-        <div className="flex items-center gap-x-2">
+      <div className="w-full min-w-0">
+        <div className="flex items-center gap-x-2 w-full min-w-0">
           {(data.isAdmin || assignedToMe) && (
             <input
               type="checkbox"
@@ -102,17 +102,17 @@ export const Header = ({ data }: HeaderProps) => {
             />
           )}
           {(data.isAdmin || assignedToMe) ? (
-            <form action={onSubmit} className="flex-1">
+            <form action={onSubmit} className="flex-1 min-w-0">
               <FormInput
                 id="title"
                 onBlur={onBlur}
                 ref={inputRef}
                 defaultValue={title}
-                className={`font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent relative -left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate ${data.isCompleted ? "line-through text-neutral-500" : ""}`}
+                className={`font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent relative -left-1.5 w-full focus-visible:bg-white focus-visible:border-input mb-0.5 truncate ${data.isCompleted ? "line-through text-neutral-500" : ""}`}
               />
             </form>
           ) : (
-            <p className={`font-semibold text-lg px-1 text-neutral-700 mb-0.5 truncate ${data.isCompleted ? "line-through text-neutral-500" : ""}`}>
+            <p className={`font-semibold text-lg px-1 text-neutral-700 mb-0.5 truncate min-w-0 ${data.isCompleted ? "line-through text-neutral-500" : ""}`}>
               {title}
             </p>
           )}
