@@ -5,7 +5,7 @@ import { getWorkspaceMembers, isWorkspaceMember } from "@/lib/firebase/workspace
 
 export async function GET(
   request: Request,
-  { params }: { params: { boardId: string } }
+  { params }: { params: Promise<{ boardId: string }> }
 ) {
   try {
     const auth = await verifyAuth();
@@ -14,7 +14,7 @@ export async function GET(
     }
 
     const { userId } = auth;
-    const { boardId } = params;
+    const { boardId } = await params;
 
     const board = await getBoard(boardId);
     if (!board) {
