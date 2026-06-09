@@ -88,10 +88,10 @@ export const Header = ({ data }: HeaderProps) => {
   };
 
   return (
-    <div className="flex items-start gap-x-3 mb-6 w-full overflow-hidden">
+    <div className="flex items-start gap-x-3 mb-6 w-full">
       <Layout className="h-5 w-5 mt-1 text-neutral-700 shrink-0" />
-      <div className="flex-1 min-w-0 overflow-hidden">
-        <div className="flex items-center gap-x-2 w-full overflow-hidden">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start gap-x-2 w-full">
           {(data.isAdmin || assignedToMe) && (
             <input
               type="checkbox"
@@ -102,22 +102,22 @@ export const Header = ({ data }: HeaderProps) => {
             />
           )}
           {(data.isAdmin || assignedToMe) ? (
-            <form action={onSubmit} className="flex-1 min-w-0 overflow-hidden">
+            <form action={onSubmit} className="flex-1 min-w-0">
               <FormInput
                 id="title"
                 onBlur={onBlur}
                 ref={inputRef}
                 defaultValue={title}
-                className={`font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent w-full focus-visible:bg-white focus-visible:border-input mb-0.5 truncate ${data.isCompleted ? "line-through text-neutral-500" : ""}`}
+                className={`font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent w-full focus-visible:bg-white focus-visible:border-input mb-0.5 whitespace-normal break-words ${data.isCompleted ? "line-through text-neutral-500" : ""}`}
               />
             </form>
           ) : (
-            <p className={`font-semibold text-lg px-1 text-neutral-700 mb-0.5 truncate flex-1 min-w-0 ${data.isCompleted ? "line-through text-neutral-500" : ""}`}>
+            <p className={`font-semibold text-lg px-1 text-neutral-700 mb-0.5 break-words flex-1 min-w-0 ${data.isCompleted ? "line-through text-neutral-500" : ""}`}>
               {title}
             </p>
           )}
         </div>
-        <p className="text-sm text-muted-foreground truncate">
+        <p className="text-sm text-muted-foreground">
           In list <span className="underline">{data.list.title}</span>
         </p>
       </div>
