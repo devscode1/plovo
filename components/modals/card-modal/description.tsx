@@ -25,7 +25,7 @@ export const Description = ({ data }: DescriptionProps) => {
   const { user } = useAuth();
   const assignees = data.assignees || [];
   const allAssignees = [...assignees, data.assignedTo].filter(Boolean) as string[];
-  const assignedToMe = allAssignees.map(a => String(a).toLowerCase()).includes((user?.email || "").toLowerCase());
+  const assignedToMe = allAssignees.map(a => String(a).toLowerCase()).includes(String(user?.email || "").toLowerCase());
   const canEdit = data.isAdmin || assignedToMe;
 
   const queryClient = useQueryClient();

@@ -38,7 +38,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       if (role === "member" && userEmail) {
         const assignees = card.assignees || [];
         const allAssignees = [...assignees, card.assignedTo].filter(Boolean) as string[];
-        if (allAssignees.map(a => String(a).toLowerCase()).includes(userEmail.toLowerCase())) {
+        if (allAssignees.map(a => String(a).toLowerCase()).includes(String(userEmail).toLowerCase())) {
           isAuthorized = true;
         }
       }
