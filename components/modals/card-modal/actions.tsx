@@ -189,68 +189,69 @@ export const Actions = ({ data }: ActionsProps) => {
       )}
 
       {data.isAdmin && (
-        <>
-          <Button
-            variant="gray"
-            className="w-full justify-start"
-            size="inline"
-            onClick={() => setIsAssignOpen(!isAssignOpen)}
-          >
-            <UserPlus className="h-4 w-4 mr-2" />
-            Assign
-          </Button>
+          <div className="relative w-full">
+            <Button
+              variant="gray"
+              className="w-full justify-start"
+              size="inline"
+              onClick={() => setIsAssignOpen(!isAssignOpen)}
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Assign
+            </Button>
 
-          {isAssignOpen && (
-            <div className="w-full rounded-md border bg-white shadow-sm p-3">
-              <div className="text-sm font-medium text-center text-neutral-600 pb-3">
-                Assign Member
-              </div>
-              <div className="flex flex-col max-h-[200px] overflow-y-auto -mx-3">
-                {isLoadingMembers ? (
-                  <div className="px-4 py-2 text-sm text-muted-foreground">Loading members...</div>
-                ) : !Array.isArray(members) || members.length === 0 ? (
-                  <div className="px-4 py-2 text-sm text-muted-foreground">No available members.</div>
-                ) : (
-                  members.map((member) => {
-                    const isAssigned = allAssignees.includes(member.email);
-                    return (
-                      <button
-                        key={member.id}
-                        type="button"
-                        onClick={() => {
-                          setIsAssignOpen(false);
-                          setLastActionEmail(member.email);
-                          const boardId = params.boardId as string;
-                          executeAssign({
-                            boardId,
-                            cardId: data.id,
-                            email: member.email,
-                          });
-                        }}
-                        disabled={isLoadingAssign}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-between disabled:opacity-50 cursor-pointer ${isAssigned ? 'bg-blue-50' : ''}`}
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          <div className="h-6 w-6 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-xs font-medium text-blue-700">
-                            {(member.displayName || member.email).charAt(0).toUpperCase()}
+            {isAssignOpen && (
+              <div className="absolute right-0 top-full mt-1 w-[260px] z-50 rounded-md border bg-white shadow-lg p-3">
+                <div className="text-sm font-medium text-center text-neutral-600 pb-3">
+                  Assign Member
+                </div>
+                <div className="flex flex-col max-h-[220px] overflow-y-auto -mx-3">
+                  {isLoadingMembers ? (
+                    <div className="px-4 py-2 text-sm text-muted-foreground">Loading members...</div>
+                  ) : !Array.isArray(members) || members.length === 0 ? (
+                    <div className="px-4 py-2 text-sm text-muted-foreground">No available members.</div>
+                  ) : (
+                    members.map((member) => {
+                      const isAssigned = allAssignees.includes(member.email);
+                      return (
+                        <button
+                          key={member.id}
+                          type="button"
+                          onClick={() => {
+                            setIsAssignOpen(false);
+                            setLastActionEmail(member.email);
+                            const boardId = params.boardId as string;
+                            executeAssign({
+                              boardId,
+                              cardId: data.id,
+                              email: member.email,
+                            });
+                          }}
+                          disabled={isLoadingAssign}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-between disabled:opacity-50 cursor-pointer ${isAssigned ? 'bg-blue-50' : ''}`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <div className="h-8 w-8 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-sm font-medium text-blue-700">
+                              {(member.displayName || member.email).charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex flex-col truncate">
+                              <span className="font-medium truncate">{member.displayName || member.email}</span>
+                              {member.displayName && (
+                                <span className="text-xs text-muted-foreground truncate">{member.email}</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex flex-col truncate">
-                            <span className="font-medium truncate">{member.displayName || member.email}</span>
-                            {member.displayName && (
-                              <span className="text-xs text-muted-foreground truncate">{member.email}</span>
-                            )}
-                          </div>
-                        </div>
-                        {isAssigned && (
-                          <div className="text-blue-600 ml-2 text-xs font-medium flex-shrink-0">Assigned</div>
-                        )}
-                      </button>
-                    );
-                  })
-                )}
+                          {isAssigned && (
+                            <div className="text-blue-600 ml-2 text-xs font-medium flex-shrink-0">Assigned</div>
+                          )}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           <Button
             onClick={onCopy}
