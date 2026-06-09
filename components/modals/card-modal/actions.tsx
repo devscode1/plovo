@@ -198,29 +198,52 @@ export const Actions = ({ data }: ActionsProps) => {
                 Assign
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="px-4 py-3" side="bottom" align="start">
-              <div className="text-sm font-medium text-center text-neutral-600 pb-4">
+            <PopoverContent className="px-0 py-3" side="bottom" align="start">
+              <div className="text-sm font-medium text-center text-neutral-600 pb-4 px-4">
                 Assign Member
               </div>
-              <form onSubmit={onAssign} className="space-y-4">
-                <select
-                  value={assignEmail}
-                  onChange={(e) => setAssignEmail(e.target.value)}
-                  disabled={isLoadingAssign || isLoadingMembers}
-                  required
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="" disabled>Select a member</option>
-                  {members.map((member) => (
-                    <option key={member.id} value={member.email}>
-                      {member.displayName || member.email}
-                    </option>
-                  ))}
-                </select>
-                <Button type="submit" disabled={isLoadingAssign || !assignEmail} className="w-full">
-                  Assign & Notify
-                </Button>
-              </form>
+              <div className="flex flex-col max-h-[300px] overflow-y-auto">
+                {isLoadingMembers ? (
+                  <div className="px-4 py-2 text-sm text-muted-foreground">Loading members...</div>
+                ) : !Array.isArray(members) || members.length === 0 ? (
+                  <div className="px-4 py-2 text-sm text-muted-foreground">No available members.</div>
+                ) : (
+                  members.map((member) => {
+                    const isAssigned = data.assignedTo === member.email;
+                    return (
+                      <button
+                        key={member.id}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const boardId = params.boardId as string;
+                          executeAssign({
+                            boardId,
+                            cardId: data.id,
+                            email: member.email,
+                          });
+                        }}
+                        disabled={isLoadingAssign}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-between disabled:opacity-50 ${isAssigned ? 'bg-blue-50/50' : ''}`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <div className="h-6 w-6 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-xs font-medium text-blue-700">
+                            {(member.displayName || member.email).charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex flex-col truncate">
+                            <span className="font-medium truncate">{member.displayName || member.email}</span>
+                            {member.displayName && (
+                              <span className="text-xs text-muted-foreground truncate">{member.email}</span>
+                            )}
+                          </div>
+                        </div>
+                        {isAssigned && (
+                          <div className="text-blue-600 ml-2 text-xs font-medium">Assigned</div>
+                        )}
+                      </button>
+                    );
+                  })
+                )}
+              </div>
             </PopoverContent>
           </Popover>
 
