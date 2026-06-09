@@ -10,11 +10,6 @@ import { fetcher } from "@/lib/fetcher";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 import type { CardWithList } from "@/types";
 import { copyCard } from "@/actions/copy-card";
@@ -196,22 +191,22 @@ export const Actions = ({ data }: ActionsProps) => {
 
       {data.isAdmin && (
         <>
-          <Popover open={isAssignOpen} onOpenChange={setIsAssignOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="gray"
-                className="w-full justify-start"
-                size="inline"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Assign
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="px-0 py-3" side="bottom" align="start">
-              <div className="text-sm font-medium text-center text-neutral-600 pb-4 px-4">
+          <Button
+            variant="gray"
+            className="w-full justify-start"
+            size="inline"
+            onClick={() => setIsAssignOpen(!isAssignOpen)}
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Assign
+          </Button>
+
+          {isAssignOpen && (
+            <div className="w-full rounded-md border bg-white shadow-sm p-3">
+              <div className="text-sm font-medium text-center text-neutral-600 pb-3">
                 Assign Member
               </div>
-              <div className="flex flex-col max-h-[300px] overflow-y-auto">
+              <div className="flex flex-col max-h-[200px] overflow-y-auto -mx-3">
                 {isLoadingMembers ? (
                   <div className="px-4 py-2 text-sm text-muted-foreground">Loading members...</div>
                 ) : !Array.isArray(members) || members.length === 0 ? (
@@ -234,7 +229,7 @@ export const Actions = ({ data }: ActionsProps) => {
                           });
                         }}
                         disabled={isLoadingAssign}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-between disabled:opacity-50 ${isAssigned ? 'bg-blue-50/50' : ''}`}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-between disabled:opacity-50 cursor-pointer ${isAssigned ? 'bg-blue-50' : ''}`}
                       >
                         <div className="flex items-center gap-2 truncate">
                           <div className="h-6 w-6 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-xs font-medium text-blue-700">
@@ -248,15 +243,15 @@ export const Actions = ({ data }: ActionsProps) => {
                           </div>
                         </div>
                         {isAssigned && (
-                          <div className="text-blue-600 ml-2 text-xs font-medium">Assigned</div>
+                          <div className="text-blue-600 ml-2 text-xs font-medium flex-shrink-0">Assigned</div>
                         )}
                       </button>
                     );
                   })
                 )}
               </div>
-            </PopoverContent>
-          </Popover>
+            </div>
+          )}
 
           <Button
             onClick={onCopy}
