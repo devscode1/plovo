@@ -48,6 +48,7 @@ Here is the folder structure of this app.
 plovo/
   |- actions/
     |-- add-workspace-admin/
+    |-- add-workspace-member/
     |-- assign-card-member/
     |-- copy-card/
     |-- copy-list/
@@ -57,6 +58,7 @@ plovo/
     |-- delete-board/
     |-- delete-card/
     |-- delete-list/
+    |-- delete-workspace/
     |-- invite-board-member/
     |-- remove-workspace-member/
     |-- toggle-card-completion/
