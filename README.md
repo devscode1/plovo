@@ -58,6 +58,7 @@ plovo/
     |-- delete-card/
     |-- delete-list/
     |-- invite-board-member/
+    |-- remove-workspace-member/
     |-- toggle-card-completion/
     |-- update-board/
     |-- update-card/
