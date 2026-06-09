@@ -14,6 +14,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  PopoverClose,
 } from "@/components/ui/popover";
 
 import type { CardWithList } from "@/types";
@@ -211,35 +212,35 @@ export const Actions = ({ data }: ActionsProps) => {
                   members.map((member) => {
                     const isAssigned = data.assignedTo === member.email;
                     return (
-                      <button
-                        key={member.id}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const boardId = params.boardId as string;
-                          executeAssign({
-                            boardId,
-                            cardId: data.id,
-                            email: member.email,
-                          });
-                        }}
-                        disabled={isLoadingAssign}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-between disabled:opacity-50 ${isAssigned ? 'bg-blue-50/50' : ''}`}
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          <div className="h-6 w-6 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-xs font-medium text-blue-700">
-                            {(member.displayName || member.email).charAt(0).toUpperCase()}
+                      <PopoverClose key={member.id} asChild>
+                        <button
+                          onClick={() => {
+                            const boardId = params.boardId as string;
+                            executeAssign({
+                              boardId,
+                              cardId: data.id,
+                              email: member.email,
+                            });
+                          }}
+                          disabled={isLoadingAssign}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 flex items-center justify-between disabled:opacity-50 ${isAssigned ? 'bg-blue-50/50' : ''}`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <div className="h-6 w-6 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-xs font-medium text-blue-700">
+                              {(member.displayName || member.email).charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex flex-col truncate">
+                              <span className="font-medium truncate">{member.displayName || member.email}</span>
+                              {member.displayName && (
+                                <span className="text-xs text-muted-foreground truncate">{member.email}</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex flex-col truncate">
-                            <span className="font-medium truncate">{member.displayName || member.email}</span>
-                            {member.displayName && (
-                              <span className="text-xs text-muted-foreground truncate">{member.email}</span>
-                            )}
-                          </div>
-                        </div>
-                        {isAssigned && (
-                          <div className="text-blue-600 ml-2 text-xs font-medium">Assigned</div>
-                        )}
-                      </button>
+                          {isAssigned && (
+                            <div className="text-blue-600 ml-2 text-xs font-medium">Assigned</div>
+                          )}
+                        </button>
+                      </PopoverClose>
                     );
                   })
                 )}
