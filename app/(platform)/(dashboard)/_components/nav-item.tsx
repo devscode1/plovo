@@ -47,11 +47,13 @@ export const NavItem = ({
       label: "Activity",
       icon: <Activity className="h-4 w-4 mr-2" />,
       href: `/organization/${organization.id}/activity`,
+      adminOnly: true,
     },
     {
       label: "Settings",
       icon: <Settings className="h-4 w-4 mr-2" />,
       href: `/organization/${organization.id}/settings`,
+      adminOnly: true,
     },
     {
       label: "Billing",
@@ -59,6 +61,8 @@ export const NavItem = ({
       href: `/organization/${organization.id}/billing`,
     },
   ];
+
+  const visibleRoutes = routes.filter(r => !r.adminOnly || (organization as any).role === "admin" || (organization as any).role === "owner");
 
   const onClick = (href: string) => {
     router.push(href);
@@ -91,7 +95,7 @@ export const NavItem = ({
          </div>
        </AccordionTrigger>
       <AccordionContent className="pt-1 text-neutral-700">
-        {routes.map((route) => (
+        {visibleRoutes.map((route) => (
           <Button
             key={route.label}
             size="sm"

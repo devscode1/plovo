@@ -16,5 +16,7 @@ export const UpdateCard = z.object({
       })
       .min(1, { message: "Title is required." }),
   ),
+  isCompleted: z.boolean().optional(),
+  deadline: z.string().optional().or(z.date().optional()),
   id: z.string(),
 });

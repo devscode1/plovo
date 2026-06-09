@@ -24,6 +24,20 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       return { error: "Card not found" };
     }
 
+    // Check RBAC
+    let isAdmin = false;
+    try {
+      const { getUserRole } = await import("@/lib/firebase/workspaces");
+      const role = await getUserRole(orgId, ctx.userId);
+      isAdmin = role === "owner" || role === "admin";
+    } catch {}
+
+    const isAssigned = card.assignedTo === ctx.user?.email;
+
+    if (!isAdmin && !isAssigned) {
+      return { error: "Unauthorized - Must be an admin or assigned to this task" };
+    }
+
     await getAdminDb().collection("cards").doc(id).update({
       isCompleted,
       updatedAt: new Date(),

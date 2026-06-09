@@ -1,9 +1,26 @@
+import { redirect } from "next/navigation";
 import { AdminManager } from "./_components/admin-manager";
+import { MemberItem } from "./_components/member-item";
 import { getAuthContext } from "@/lib/firebase/auth-helpers";
-import { getWorkspaceMembers } from "@/lib/firebase/workspaces";
+import { getWorkspaceMembers, requireAdminRole } from "@/lib/firebase/workspaces";
 
 const SettingsPage = async ({ params }: { params: Promise<{ organizationId: string }> }) => {
   const { organizationId } = await params;
+  const ctx = await getAuthContext();
+
+  let isAdmin = false;
+  try {
+    if (ctx.userId) {
+      isAdmin = await requireAdminRole(organizationId, ctx.userId);
+    }
+  } catch {
+    isAdmin = false;
+  }
+
+  if (!isAdmin) {
+    redirect(`/organization/${organizationId}`);
+  }
+
   const members = await getWorkspaceMembers(organizationId);
 
   return (
@@ -20,12 +37,11 @@ const SettingsPage = async ({ params }: { params: Promise<{ organizationId: stri
           <h3 className="text-xl font-semibold mb-4">Workspace Members</h3>
           <ul className="space-y-2">
             {members.map((member) => (
-              <li key={member.id} className="flex justify-between items-center p-3 border rounded-md">
-                <div>
-                  <p className="font-medium">{member.displayName} ({member.email})</p>
-                  <p className="text-xs text-muted-foreground capitalize">Role: {member.role}</p>
-                </div>
-              </li>
+              <MemberItem 
+                key={member.id} 
+                member={member} 
+                isCurrentUser={member.userId === ctx.userId}
+              />
             ))}
           </ul>
         </div>

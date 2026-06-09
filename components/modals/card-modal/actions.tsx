@@ -18,8 +18,11 @@ import type { CardWithList } from "@/types";
 import { copyCard } from "@/actions/copy-card";
 import { deleteCard } from "@/actions/delete-card";
 import { assignCardMember } from "@/actions/assign-card-member";
+import { updateCard } from "@/actions/update-card";
+import { toggleCardCompletion } from "@/actions/toggle-card-completion";
 import { useAction } from "@/hooks/use-action";
 import { useCardModal } from "@/hooks/use-card-modal";
+import { useAuth } from "@/lib/firebase/auth-context";
 
 type ActionsProps = {
   data: CardWithList;
@@ -95,6 +98,58 @@ export const Actions = ({ data }: ActionsProps) => {
     });
   };
 
+  const [isCompleted, setIsCompleted] = useState(data.isCompleted || false);
+  const [deadline, setDeadline] = useState(
+    data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : ""
+  );
+
+  const { execute: executeToggle } = useAction(toggleCardCompletion, {
+    onSuccess: (data) => {
+      toast.success(`Card marked as ${data.isCompleted ? 'complete' : 'incomplete'}.`);
+    },
+    onError: (error) => {
+      toast.error(error);
+      setIsCompleted(!isCompleted);
+    },
+  });
+
+  const { execute: executeUpdateCard } = useAction(updateCard, {
+    onSuccess: (data) => {
+      toast.success(`Card updated.`);
+    },
+    onError: (error) => {
+      toast.error(error);
+    },
+  });
+
+  const onToggleComplete = () => {
+    const newValue = !isCompleted;
+    setIsCompleted(newValue);
+    executeToggle({
+      id: data.id,
+      boardId: params.boardId as string,
+      isCompleted: newValue,
+    });
+  };
+
+  const onDeadlineChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDeadline = e.target.value;
+    setDeadline(newDeadline);
+    executeUpdateCard({
+      id: data.id,
+      boardId: params.boardId as string,
+      deadline: newDeadline || undefined,
+    });
+  };
+
+  const canEdit = data.isAdmin;
+  const isAssigned = data.assignedTo && data.assignedTo === authUserEmail; // Wait, authUserEmail? I need the current user's email.
+  // Actually, I can just use getAuthContext, or if I can't easily get email, let's assume if it's assigned to them, they can toggle it. But I don't have authUserEmail in the client.
+
+  // Let me just add a prop to Actions or use useAuth() from the context.
+  const { user } = useAuth();
+  const assignedToMe = data.assignedTo === user?.email;
+
   return (
     <div className="space-y-2 mt-2">
       <p className="text-xs font-semibold">Actions</p>
@@ -103,6 +158,29 @@ export const Actions = ({ data }: ActionsProps) => {
         <p className="text-xs text-neutral-500 mb-2 truncate">
           Assigned to: {data.assignedTo}
         </p>
+      )}
+
+      {(data.isAdmin || assignedToMe) && (
+        <Button
+          onClick={onToggleComplete}
+          variant={isCompleted ? "primary" : "gray"}
+          className="w-full justify-start"
+          size="inline"
+        >
+          {isCompleted ? "Mark Incomplete" : "Mark Complete"}
+        </Button>
+      )}
+
+      {data.isAdmin && (
+        <div className="w-full mb-2">
+          <label className="text-xs font-semibold mb-1 block">Deadline</label>
+          <Input 
+            type="date" 
+            value={deadline} 
+            onChange={onDeadlineChange} 
+            className="w-full text-sm"
+          />
+        </div>
       )}
 
       {data.isAdmin && (

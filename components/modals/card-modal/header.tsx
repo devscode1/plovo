@@ -12,6 +12,7 @@ import { FormInput } from "@/components/form/form-input";
 import { useAction } from "@/hooks/use-action";
 import { updateCard } from "@/actions/update-card";
 import { toggleCardCompletion } from "@/actions/toggle-card-completion";
+import { useAuth } from "@/lib/firebase/auth-context";
 import { CardWithList } from "@/types";
 
 type HeaderProps = {
@@ -22,6 +23,9 @@ export const Header = ({ data }: HeaderProps) => {
   const [title, setTitle] = useState(data.title);
   const queryClient = useQueryClient();
   const params = useParams();
+  
+  const { user } = useAuth();
+  const assignedToMe = data.assignedTo === user?.email;
 
   const { execute } = useAction(updateCard, {
     onSuccess: (data) => {
@@ -86,13 +90,15 @@ export const Header = ({ data }: HeaderProps) => {
       <Layout className="h-5 w-5 mt-1 text-neutral-700" />
       <div className="w-full">
         <div className="flex items-center gap-x-2">
-          <input
-            type="checkbox"
-            checked={!!data.isCompleted}
-            onChange={onToggleComplete}
-            disabled={isToggling}
-            className="w-4 h-4 cursor-pointer"
-          />
+          {(data.isAdmin || assignedToMe) && (
+            <input
+              type="checkbox"
+              checked={!!data.isCompleted}
+              onChange={onToggleComplete}
+              disabled={isToggling}
+              className="w-4 h-4 cursor-pointer"
+            />
+          )}
           {data.isAdmin ? (
             <form action={onSubmit} className="flex-1">
               <FormInput

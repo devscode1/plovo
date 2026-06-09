@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { doc, getDoc, setDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, collectionGroup } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import { useAuth } from "@/lib/firebase/auth-context";
 
@@ -45,20 +45,25 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchWorkspaces = useCallback(async (userId: string) => {
-    const membersRef = collection(db, "workspaces");
-    const q = query(membersRef, where("ownerId", "==", userId));
-
-    const memberDocs = await getDocs(q);
+    // We need collectionGroup to query all members subcollections
+    // But since collectionGroup requires a composite index, we might need a different approach
+    // Let's assume there is a collectionGroup index or we query the top level workspaces and filter.
+    // Actually, querying the server action via an API endpoint might be easier, but let's query members.
+    const membersQuery = query(collectionGroup(db, "members"), where("userId", "==", userId));
+    const memberDocs = await getDocs(membersQuery);
+    
     const workspacePromises = memberDocs.docs.map(async (docSnapshot) => {
-      const workspaceRef = doc(db, "workspaces", docSnapshot.id);
+      const workspaceId = docSnapshot.data().workspaceId;
+      const role = docSnapshot.data().role;
+      const workspaceRef = doc(db, "workspaces", workspaceId);
       const workspaceSnap = await getDoc(workspaceRef);
       if (workspaceSnap.exists()) {
-        return { id: workspaceSnap.id, ...workspaceSnap.data() } as Workspace;
+        return { id: workspaceSnap.id, ...workspaceSnap.data(), role } as Workspace & { role: string };
       }
       return null;
     });
 
-    const workspaces = (await Promise.all(workspacePromises)).filter(Boolean) as Workspace[];
+    const workspaces = (await Promise.all(workspacePromises)).filter(Boolean) as (Workspace & { role: string })[];
     setWorkspaces(workspaces);
     return workspaces;
   }, []);

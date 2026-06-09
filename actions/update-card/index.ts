@@ -43,7 +43,19 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       return { error: "Board not found" };
     }
 
-    await updateCardDb(id, values);
+    const updateData: any = { ...values };
+    
+    if (updateData.deadline) {
+      updateData.deadline = new Date(updateData.deadline);
+    }
+    
+    if (updateData.isCompleted && !card.isCompleted) {
+      updateData.completedAt = new Date();
+    } else if (updateData.isCompleted === false) {
+      updateData.completedAt = null;
+    }
+
+    await updateCardDb(id, updateData);
 
     await createAuditLog(orgId, userId, {
       entityId: id,

@@ -7,6 +7,7 @@ import { AddWorkspaceAdmin } from "./schema";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase/admin";
 import { requireAdminRole, WorkspaceMember } from "@/lib/firebase/workspaces";
+import { sendEmail } from "@/lib/mail";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();
@@ -56,6 +57,17 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
       // Upgrade to admin
       await doc.ref.update({ role: "admin" });
+      
+      try {
+        await sendEmail({
+          to: targetUser.email!,
+          subject: "You have been made an Admin",
+          html: `<p>Hello ${targetUser.displayName || targetUser.email},</p><p>You have been upgraded to an <strong>Admin</strong> in the Plovo workspace. You can now manage settings and view all activity.</p>`,
+        });
+      } catch (err) {
+        console.error("Failed to send admin upgrade email", err);
+      }
+      
       revalidatePath(`/organization/${orgId}/settings`);
       return { data: { id: doc.id, ...doc.data(), role: "admin" } as unknown as WorkspaceMember };
     }
@@ -76,6 +88,16 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       .doc(orgId)
       .collection("members")
       .add(newMemberData);
+
+    try {
+      await sendEmail({
+        to: targetUser.email!,
+        subject: "You have been made an Admin",
+        html: `<p>Hello ${targetUser.displayName || targetUser.email},</p><p>You have been added as an <strong>Admin</strong> to a Plovo workspace. You can now manage settings and view all activity.</p>`,
+      });
+    } catch (err) {
+      console.error("Failed to send admin invite email", err);
+    }
 
     revalidatePath(`/organization/${orgId}/settings`);
     return { data: { id: docRef.id, ...newMemberData } as unknown as WorkspaceMember };

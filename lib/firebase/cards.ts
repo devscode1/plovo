@@ -9,6 +9,9 @@ export interface Card {
   listId: string;
   assignedTo?: string | null;
   isCompleted?: boolean;
+  deadline?: Date | null;
+  completedAt?: Date | null;
+  deadlineEmailSent?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
