@@ -189,6 +189,7 @@ export const Actions = ({ data }: ActionsProps) => {
       )}
 
       {data.isAdmin && (
+        <>
           <div className="relative w-full">
             <Button
               variant="gray"
@@ -205,7 +206,7 @@ export const Actions = ({ data }: ActionsProps) => {
                 <div className="text-sm font-medium text-center text-neutral-600 pb-3">
                   Assign Member
                 </div>
-                <div className="flex flex-col max-h-[220px] overflow-y-auto -mx-3">
+                <div className="flex flex-col max-h-[220px] overflow-y-auto overflow-x-hidden -mx-3">
                   {isLoadingMembers ? (
                     <div className="px-4 py-2 text-sm text-muted-foreground">Loading members...</div>
                   ) : !Array.isArray(members) || members.length === 0 ? (
