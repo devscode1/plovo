@@ -142,11 +142,6 @@ export const Actions = ({ data }: ActionsProps) => {
     });
   };
 
-  const canEdit = data.isAdmin;
-  const isAssigned = data.assignedTo && data.assignedTo === authUserEmail; // Wait, authUserEmail? I need the current user's email.
-  // Actually, I can just use getAuthContext, or if I can't easily get email, let's assume if it's assigned to them, they can toggle it. But I don't have authUserEmail in the client.
-
-  // Let me just add a prop to Actions or use useAuth() from the context.
   const { user } = useAuth();
   const assignedToMe = data.assignedTo === user?.email;
 

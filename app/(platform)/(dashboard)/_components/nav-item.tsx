@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Activity, CreditCard, Layout, Settings } from "lucide-react";
+import { Activity, BarChart, CreditCard, Layout, Settings } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
 import {
@@ -47,6 +47,12 @@ export const NavItem = ({
       label: "Activity",
       icon: <Activity className="h-4 w-4 mr-2" />,
       href: `/organization/${organization.id}/activity`,
+      adminOnly: true,
+    },
+    {
+      label: "Dashboard",
+      icon: <BarChart className="h-4 w-4 mr-2" />,
+      href: `/organization/${organization.id}/admin`,
       adminOnly: true,
     },
     {
