@@ -67,7 +67,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     revalidatePath(`/board/${boardId}`);
-    return { data: { ...card, ...values } };
+    return { data: { ...card, ...updateData } };
   } catch {
     return { error: "Failed to update." };
   }
