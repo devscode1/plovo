@@ -32,26 +32,29 @@ export const CardModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-[95vw] sm:max-w-[700px] overflow-y-auto overflow-x-hidden max-h-[90vh]">
-        {cardData ? <Header data={cardData} /> : <Header.Skeleton />}
+      <DialogContent className="w-full max-w-[95vw] sm:max-w-[700px] overflow-hidden p-0 flex flex-col max-h-[90vh]">
+        {/* Scrollable inner area */}
+        <div className="overflow-y-auto overflow-x-hidden flex-1 p-6">
+          {cardData ? <Header data={cardData} /> : <Header.Skeleton />}
 
-        <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4">
-          <div className="col-span-3">
-            <div className="w-full space-y-6">
-              {cardData ? (
-                <Description data={cardData} />
-              ) : (
-                <Description.Skeleton />
-              )}
-              {auditLogsData ? (
-                <Activity data={auditLogsData} />
-              ) : (
-                <Activity.Skeleton />
-              )}
+          <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4">
+            <div className="col-span-3">
+              <div className="w-full space-y-6">
+                {cardData ? (
+                  <Description data={cardData} />
+                ) : (
+                  <Description.Skeleton />
+                )}
+                {auditLogsData ? (
+                  <Activity data={auditLogsData} />
+                ) : (
+                  <Activity.Skeleton />
+                )}
+              </div>
             </div>
-          </div>
 
-          {cardData ? <Actions data={cardData} /> : <Actions.Skeleton />}
+            {cardData ? <Actions data={cardData} /> : <Actions.Skeleton />}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

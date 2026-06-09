@@ -41,8 +41,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     const { pending } = useFormStatus();
 
     return (
-      <div className="space-y-2">
-        <div className="space-y-1">
+      <div className="space-y-2 min-w-0 overflow-hidden">
+        <div className="space-y-1 min-w-0">
           {label && (
             <Label
               htmlFor={id}
@@ -63,7 +63,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             type={type}
             disabled={pending || disabled}
             aria-disabled={pending || disabled}
-            className={cn("text-sm px-2 py-1 h-7", className)}
+            className={cn("text-sm px-2 py-1 h-7 min-w-0 w-full", className)}
             aria-describedby={`${id}-error`}
           />
         </div>
