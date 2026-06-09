@@ -7,6 +7,7 @@ export interface Card {
   order: number;
   description: string | null;
   listId: string;
+  assignedTo?: string | null;
   assignees?: string[];
   isCompleted?: boolean;
   deadline?: Date | null;
