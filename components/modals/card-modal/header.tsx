@@ -27,7 +27,7 @@ export const Header = ({ data }: HeaderProps) => {
   const { user } = useAuth();
   const assignees = data.assignees || [];
   const allAssignees = [...assignees, data.assignedTo].filter(Boolean) as string[];
-  const assignedToMe = allAssignees.map(a => a.toLowerCase()).includes((user?.email || "").toLowerCase());
+  const assignedToMe = allAssignees.map(a => String(a).toLowerCase()).includes((user?.email || "").toLowerCase());
 
   const { execute } = useAction(updateCard, {
     onSuccess: (data) => {

@@ -77,7 +77,7 @@ export const Actions = ({ data }: ActionsProps) => {
   const assignees = data.assignees || [];
   const allAssignees = [...assignees, data.assignedTo].filter(Boolean) as string[];
   const { user } = useAuth();
-  const assignedToMe = allAssignees.map(a => a.toLowerCase()).includes((user?.email || "").toLowerCase());
+  const assignedToMe = allAssignees.map(a => String(a).toLowerCase()).includes((user?.email || "").toLowerCase());
 
   const [lastActionEmail, setLastActionEmail] = useState("");
   const [isAssignOpen, setIsAssignOpen] = useState(false);
