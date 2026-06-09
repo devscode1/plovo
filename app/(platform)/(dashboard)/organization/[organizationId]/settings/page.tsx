@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { AdminManager } from "./_components/admin-manager";
+import { MemberManager } from "./_components/member-manager";
+import { DeleteWorkspaceButton } from "./_components/delete-workspace-button";
 import { MemberItem } from "./_components/member-item";
 import { getAuthContext } from "@/lib/firebase/auth-helpers";
 import { getWorkspaceMembers, requireAdminRole } from "@/lib/firebase/workspaces";
@@ -32,6 +34,7 @@ const SettingsPage = async ({ params }: { params: Promise<{ organizationId: stri
         </p>
 
         <AdminManager />
+        <MemberManager />
 
         <div className="mt-8 border-t pt-8">
           <h3 className="text-xl font-semibold mb-4">Workspace Members</h3>
@@ -45,6 +48,10 @@ const SettingsPage = async ({ params }: { params: Promise<{ organizationId: stri
             ))}
           </ul>
         </div>
+      </div>
+      
+      <div className="p-6 pt-0">
+        <DeleteWorkspaceButton />
       </div>
     </div>
   );

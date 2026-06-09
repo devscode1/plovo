@@ -99,7 +99,7 @@ export const Header = ({ data }: HeaderProps) => {
               className="w-4 h-4 cursor-pointer"
             />
           )}
-          {data.isAdmin ? (
+          {(data.isAdmin || assignedToMe) ? (
             <form action={onSubmit} className="flex-1">
               <FormInput
                 id="title"

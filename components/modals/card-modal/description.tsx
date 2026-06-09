@@ -15,12 +15,17 @@ import { FormSubmit } from "@/components/form/form-submit";
 import { useAction } from "@/hooks/use-action";
 import { updateCard } from "@/actions/update-card";
 import { CardWithList } from "@/types";
+import { useAuth } from "@/lib/firebase/auth-context";
 
 type DescriptionProps = {
   data: CardWithList;
 };
 
 export const Description = ({ data }: DescriptionProps) => {
+  const { user } = useAuth();
+  const assignedToMe = data.assignedTo === user?.email;
+  const canEdit = data.isAdmin || assignedToMe;
+
   const queryClient = useQueryClient();
   const params = useParams();
 
@@ -108,9 +113,9 @@ export const Description = ({ data }: DescriptionProps) => {
           </form>
         ) : (
           <div
-            onClick={data.isAdmin ? enableEditing : undefined}
-            role={data.isAdmin ? "button" : "presentation"}
-            className={`min-h-[78px] bg-neutral-200 text-sm font-medium py-3 px-3.5 rounded-md ${!data.isAdmin && "cursor-default"}`}
+            onClick={canEdit ? enableEditing : undefined}
+            role={canEdit ? "button" : "presentation"}
+            className={`min-h-[78px] bg-neutral-200 text-sm font-medium py-3 px-3.5 rounded-md ${!canEdit && "cursor-default"}`}
           >
             {data.description || "Add a more detailed description..."}
           </div>

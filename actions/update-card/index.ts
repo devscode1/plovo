@@ -9,7 +9,7 @@ import { updateCard as updateCardDb, getCard } from "@/lib/firebase/cards";
 import { getList } from "@/lib/firebase/lists";
 import { getBoard } from "@/lib/firebase/boards";
 import { requireAuthContext } from "@/lib/firebase/auth-helpers";
-import { requireAdminRole } from "@/lib/firebase/workspaces";
+import { requireAdminRole, getUserRole } from "@/lib/firebase/workspaces";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();
@@ -19,12 +19,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     return { error: "Unauthorized" };
   }
 
-  try {
-    await requireAdminRole(orgId, ctx.userId);
-  } catch (error) {
-    return { error: error instanceof Error ? error.message : "Unauthorized - Admin access required" };
-  }
-
   const { id, boardId, ...values } = data;
 
   try {
@@ -32,6 +26,25 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     if (!card) {
       return { error: "Card not found" };
     }
+
+    let isAuthorized = false;
+    try {
+      await requireAdminRole(orgId, ctx.userId);
+      isAuthorized = true;
+    } catch {
+      // If not an admin, check if member and assigned to this card
+      const role = await getUserRole(orgId, ctx.userId);
+      const userEmail = ctx.user?.email;
+      if (role === "member" && card.assignedTo && userEmail && card.assignedTo.toLowerCase() === userEmail.toLowerCase()) {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) {
+      return { error: "Unauthorized - You can only edit your assigned tasks" };
+    }
+
+
 
     const list = await getList(card.listId);
     if (!list) {
