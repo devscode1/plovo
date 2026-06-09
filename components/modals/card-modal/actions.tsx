@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { Copy, Trash, UserPlus } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetcher } from "@/lib/fetcher";
 
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,8 @@ type ActionsProps = {
 };
 
 export const Actions = ({ data }: ActionsProps) => {
+  const queryClient = useQueryClient();
+
   const { execute: executeCopyData, isLoading: isLoadingCopy } = useAction(
     copyCard,
     {
@@ -84,6 +86,12 @@ export const Actions = ({ data }: ActionsProps) => {
     {
       onSuccess: () => {
         toast.success(`Assigned to ${assignEmail}`);
+        queryClient.invalidateQueries({
+          queryKey: ["card", data.id]
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["card-logs", data.id]
+        });
       },
       onError: (error) => {
         toast.error(error);
