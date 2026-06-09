@@ -4,6 +4,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { Copy, Trash, UserPlus } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetcher } from "@/lib/fetcher";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,7 +35,7 @@ export const Actions = ({ data }: ActionsProps) => {
     copyCard,
     {
       onSuccess: (data) => {
-        toast.success(`Card "${data.title} copied."`);
+        toast.success(`Card "${data.title}" copied.`);
         cardModal.onClose();
       },
       onError: (error) => {
@@ -45,7 +47,7 @@ export const Actions = ({ data }: ActionsProps) => {
     deleteCard,
     {
       onSuccess: (data) => {
-        toast.success(`Card "${data.title} deleted."`);
+        toast.success(`Card "${data.title}" deleted.`);
         cardModal.onClose();
       },
       onError: (error) => {
@@ -145,6 +147,11 @@ export const Actions = ({ data }: ActionsProps) => {
   const { user } = useAuth();
   const assignedToMe = data.assignedTo === user?.email;
 
+  const { data: members = [], isLoading: isLoadingMembers } = useQuery<any[]>({
+    queryKey: ["board-members", params.boardId],
+    queryFn: () => fetcher(`/api/boards/${params.boardId}/members`),
+  });
+
   return (
     <div className="space-y-2 mt-2">
       <p className="text-xs font-semibold">Actions</p>
@@ -196,15 +203,21 @@ export const Actions = ({ data }: ActionsProps) => {
                 Assign Member
               </div>
               <form onSubmit={onAssign} className="space-y-4">
-                <Input
-                  placeholder="Email address"
-                  type="email"
+                <select
                   value={assignEmail}
                   onChange={(e) => setAssignEmail(e.target.value)}
-                  disabled={isLoadingAssign}
+                  disabled={isLoadingAssign || isLoadingMembers}
                   required
-                />
-                <Button type="submit" disabled={isLoadingAssign} className="w-full">
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="" disabled>Select a member</option>
+                  {members.map((member) => (
+                    <option key={member.id} value={member.email}>
+                      {member.displayName || member.email}
+                    </option>
+                  ))}
+                </select>
+                <Button type="submit" disabled={isLoadingAssign || !assignEmail} className="w-full">
                   Assign & Notify
                 </Button>
               </form>

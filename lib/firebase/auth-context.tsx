@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(firebaseUser);
       if (firebaseUser) {
         // Always sync the session cookie with the latest token
-        const token = await firebaseUser.getIdToken();
+        const token = await firebaseUser.getIdToken(true);
         document.cookie = `__session=${token}; path=/; max-age=3600; SameSite=Lax`;
         await fetchProfile(firebaseUser);
       } else {
@@ -78,14 +78,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    // Proactively refresh the token every 55 minutes to prevent expiry
+    // Proactively refresh the token every 5 minutes to prevent expiry
     const refreshInterval = setInterval(async () => {
       const currentUser = auth.currentUser;
       if (currentUser) {
         const token = await currentUser.getIdToken(true);
         document.cookie = `__session=${token}; path=/; max-age=3600; SameSite=Lax`;
       }
-    }, 55 * 60 * 1000);
+    }, 5 * 60 * 1000);
 
     return () => {
       unsubscribe();
