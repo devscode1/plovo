@@ -30,6 +30,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       };
     }
 
+    try {
+      await requireAdminRole(orgId, userId);
+    } catch (e: any) {
+      return { error: "Unauthorized - Admin access required" };
+    }
+
     await createAuditLog(orgId, userId, {
       entityId: board.id,
       entityTitle: board.title,
@@ -40,9 +46,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     await deleteBoardDb(id);
-  } catch {
+  } catch (err: any) {
     return {
-      error: "Failed to delete.",
+      error: "Failed to delete: " + err.message,
     };
   }
 

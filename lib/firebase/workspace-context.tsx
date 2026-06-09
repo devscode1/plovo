@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, collectionGroup } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import { useAuth } from "@/lib/firebase/auth-context";
 
@@ -10,6 +10,7 @@ export interface Workspace {
   name: string;
   ownerId: string;
   slug: string;
+  role?: string; // "owner" | "admin" | "member"
 }
 
 interface WorkspaceContextType {
@@ -18,6 +19,7 @@ interface WorkspaceContextType {
   loading: boolean;
   setActiveWorkspace: (workspace: Workspace) => void;
   createWorkspace: (name: string) => Promise<Workspace>;
+  refreshWorkspaces: () => Promise<void>;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType>({} as WorkspaceContextType);
@@ -44,29 +46,22 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [activeWorkspace, setActiveWorkspaceState] = useState<Workspace | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchWorkspaces = useCallback(async (userId: string) => {
-    // We need collectionGroup to query all members subcollections
-    // But since collectionGroup requires a composite index, we might need a different approach
-    // Let's assume there is a collectionGroup index or we query the top level workspaces and filter.
-    // Actually, querying the server action via an API endpoint might be easier, but let's query members.
-    const membersQuery = query(collectionGroup(db, "members"), where("userId", "==", userId));
-    const memberDocs = await getDocs(membersQuery);
-    
-    const workspacePromises = memberDocs.docs.map(async (docSnapshot) => {
-      const workspaceId = docSnapshot.data().workspaceId;
-      const role = docSnapshot.data().role;
-      const workspaceRef = doc(db, "workspaces", workspaceId);
-      const workspaceSnap = await getDoc(workspaceRef);
-      if (workspaceSnap.exists()) {
-        return { id: workspaceSnap.id, ...workspaceSnap.data(), role } as Workspace & { role: string };
-      }
-      return null;
-    });
-
-    const workspaces = (await Promise.all(workspacePromises)).filter(Boolean) as (Workspace & { role: string })[];
-    setWorkspaces(workspaces);
-    return workspaces;
+  const fetchWorkspaces = useCallback(async (): Promise<Workspace[]> => {
+    try {
+      const res = await fetch("/api/workspaces");
+      if (!res.ok) return [];
+      const data: Workspace[] = await res.json();
+      setWorkspaces(data);
+      return data;
+    } catch (err) {
+      console.error("Failed to fetch workspaces:", err);
+      return [];
+    }
   }, []);
+
+  const refreshWorkspaces = useCallback(async () => {
+    await fetchWorkspaces();
+  }, [fetchWorkspaces]);
 
   useEffect(() => {
     if (!user) {
@@ -77,10 +72,11 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
 
     const load = async () => {
-      const workspaces = await fetchWorkspaces(user.uid);
+      setLoading(true);
+      const fetched = await fetchWorkspaces();
 
       const activeId = getActiveWorkspaceId();
-      const active = workspaces.find((w) => w.id === activeId) || workspaces[0] || null;
+      const active = fetched.find((w) => w.id === activeId) || fetched[0] || null;
 
       setActiveWorkspaceState(active);
       setActiveWorkspaceId(active?.id || null);
@@ -120,13 +116,19 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       createdAt: new Date(),
     });
 
-    const newWorkspace = { id: docRef.id, ...workspaceData };
-    setWorkspaces((prev) => [...prev, newWorkspace]);
+    // Re-fetch from server to get correct data with role
+    const updated = await fetchWorkspaces();
+    const newWorkspace = updated.find((w) => w.id === docRef.id) || {
+      id: docRef.id,
+      ...workspaceData,
+      role: "owner",
+    };
+
     setActiveWorkspaceState(newWorkspace);
     setActiveWorkspaceId(newWorkspace.id);
 
     return newWorkspace;
-  }, [user]);
+  }, [user, fetchWorkspaces]);
 
   return (
     <WorkspaceContext.Provider
@@ -136,6 +138,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         loading: loading || authLoading,
         setActiveWorkspace,
         createWorkspace,
+        refreshWorkspaces,
       }}
     >
       {children}
