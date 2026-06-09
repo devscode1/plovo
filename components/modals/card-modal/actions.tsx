@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { Copy, Trash, UserPlus } from "lucide-react";
@@ -104,12 +104,25 @@ export const Actions = ({ data }: ActionsProps) => {
     data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : ""
   );
 
+  // Keep local state in sync when query data updates (e.g. after close/reopen)
+  useEffect(() => {
+    setIsCompleted(data.isCompleted || false);
+  }, [data.isCompleted]);
+
+  useEffect(() => {
+    setDeadline(data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : "");
+  }, [data.deadline]);
+
   const { execute: executeToggle } = useAction(toggleCardCompletion, {
-    onSuccess: (data) => {
-      toast.success(`Card marked as ${data.isCompleted ? 'complete' : 'incomplete'}.`);
+    onSuccess: (updatedCard) => {
+      toast.success(`Card marked as ${updatedCard.isCompleted ? 'complete' : 'incomplete'}.`);
+      // Invalidate so query cache reflects truth
+      queryClient.invalidateQueries({ queryKey: ["card", data.id] });
+      queryClient.invalidateQueries({ queryKey: ["card-logs", data.id] });
     },
     onError: (error) => {
       toast.error(error);
+      // Revert optimistic update
       setIsCompleted(!isCompleted);
     },
   });
