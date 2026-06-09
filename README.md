@@ -236,12 +236,13 @@ Useful resources and libraries that are used in My Portfolio
 <!--- DEPENDENCIES_START --->
 - [@hello-pangea/dnd](https://www.npmjs.com/package/@hello-pangea/dnd): ^16.6.0
 - [@radix-ui/react-accordion](https://www.npmjs.com/package/@radix-ui/react-accordion): ^1.2.12
+- [@radix-ui/react-alert-dialog](https://www.npmjs.com/package/@radix-ui/react-alert-dialog): ^1.1.16
 - [@radix-ui/react-avatar](https://www.npmjs.com/package/@radix-ui/react-avatar): ^1.1.11
 - [@radix-ui/react-dialog](https://www.npmjs.com/package/@radix-ui/react-dialog): ^1.1.15
 - [@radix-ui/react-label](https://www.npmjs.com/package/@radix-ui/react-label): ^2.1.8
 - [@radix-ui/react-popover](https://www.npmjs.com/package/@radix-ui/react-popover): ^1.1.15
 - [@radix-ui/react-separator](https://www.npmjs.com/package/@radix-ui/react-separator): ^1.1.8
-- [@radix-ui/react-slot](https://www.npmjs.com/package/@radix-ui/react-slot): ^1.2.4
+- [@radix-ui/react-slot](https://www.npmjs.com/package/@radix-ui/react-slot): ^1.2.5
 - [@radix-ui/react-tooltip](https://www.npmjs.com/package/@radix-ui/react-tooltip): ^1.2.8
 - [@tanstack/react-query](https://www.npmjs.com/package/@tanstack/react-query): ^5.90.21
 - [@types/lodash](https://www.npmjs.com/package/@types/lodash): ^4.17.23
