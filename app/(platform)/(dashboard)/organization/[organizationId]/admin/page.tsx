@@ -62,9 +62,11 @@ async function getMemberStats(orgId: string): Promise<MemberStats[]> {
   const now = new Date();
 
   const stats: MemberStats[] = members.map((member) => {
-    const memberCards = allCards.filter(
-      (c) => c.assignedTo === member.email
-    );
+    const memberCards = allCards.filter((c) => {
+      const assignees = c.assignees || [];
+      const allAssignees = [...assignees, c.assignedTo].filter(Boolean) as string[];
+      return allAssignees.includes(member.email);
+    });
 
     const completed = memberCards.filter((c) => c.isCompleted).length;
     const missed = memberCards.filter(

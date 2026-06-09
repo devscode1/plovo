@@ -38,29 +38,42 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       return { error: "Card not found" };
     }
 
-    // Update card with assignedTo email
+    const assignees = card.assignees || [];
+    // Migrate legacy assignedTo field if present
+    if (card.assignedTo && !assignees.includes(card.assignedTo)) {
+      assignees.push(card.assignedTo);
+    }
+
+    const isCurrentlyAssigned = assignees.includes(email);
+    const newAssignees = isCurrentlyAssigned
+      ? assignees.filter(a => a !== email)
+      : [...assignees, email];
+
+    // Update card with new assignees array
     await getAdminDb().collection("cards").doc(cardId).update({
-      assignedTo: email,
+      assignees: newAssignees,
       updatedAt: new Date(),
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const boardUrl = `${appUrl}/api/invite/${boardId}`;
+    if (!isCurrentlyAssigned) {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const boardUrl = `${appUrl}/api/invite/${boardId}`;
 
-    // Send email to the assigned user
-    await sendEmail({
-      to: email,
-      subject: `You have been assigned to a task: ${card.title}`,
-      html: `
-        <h2>You have a new task assigned to you!</h2>
-        <p><strong>Board:</strong> ${board.title}</p>
-        <p><strong>Task:</strong> ${card.title}</p>
-        <br />
-        <a href="${boardUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0079bf; color: white; text-decoration: none; border-radius: 5px;">View Task on Plovo</a>
-        <br /><br />
-        <p>If you don't have an account yet, clicking the link will prompt you to create one first!</p>
-      `,
-    });
+      // Send email to the newly assigned user
+      await sendEmail({
+        to: email,
+        subject: `You have been assigned to a task: ${card.title}`,
+        html: `
+          <h2>You have a new task assigned to you!</h2>
+          <p><strong>Board:</strong> ${board.title}</p>
+          <p><strong>Task:</strong> ${card.title}</p>
+          <br />
+          <a href="${boardUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0079bf; color: white; text-decoration: none; border-radius: 5px;">View Task on Plovo</a>
+          <br /><br />
+          <p>If you don't have an account yet, clicking the link will prompt you to create one first!</p>
+        `,
+      });
+    }
 
     revalidatePath(`/board/${boardId}`);
     return { data: { success: true } };

@@ -35,8 +35,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       // If not an admin, check if member and assigned to this card
       const role = await getUserRole(orgId, ctx.userId);
       const userEmail = ctx.user?.email as string | undefined;
-      if (role === "member" && card.assignedTo && userEmail && (card.assignedTo as string).toLowerCase() === userEmail.toLowerCase()) {
-        isAuthorized = true;
+      if (role === "member" && userEmail) {
+        const assignees = card.assignees || [];
+        const allAssignees = [...assignees, card.assignedTo].filter(Boolean) as string[];
+        if (allAssignees.map(a => a.toLowerCase()).includes(userEmail.toLowerCase())) {
+          isAuthorized = true;
+        }
       }
     }
 

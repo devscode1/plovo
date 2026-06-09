@@ -74,13 +74,18 @@ export const Actions = ({ data }: ActionsProps) => {
     });
   };
 
-  const [assignEmail, setAssignEmail] = useState(data.assignedTo || "");
+  const assignees = data.assignees || [];
+  const allAssignees = [...assignees, data.assignedTo].filter(Boolean) as string[];
+  const { user } = useAuth();
+  const assignedToMe = allAssignees.map(a => a.toLowerCase()).includes((user?.email || "").toLowerCase());
+
+  const [lastActionEmail, setLastActionEmail] = useState("");
   const [isAssignOpen, setIsAssignOpen] = useState(false);
   const { execute: executeAssign, isLoading: isLoadingAssign } = useAction(
     assignCardMember,
     {
       onSuccess: () => {
-        toast.success(`Assigned to ${assignEmail}`);
+        toast.success(`Assignment updated for ${lastActionEmail}`);
         queryClient.invalidateQueries({
           queryKey: ["card", data.id]
         });
@@ -93,16 +98,6 @@ export const Actions = ({ data }: ActionsProps) => {
       },
     }
   );
-
-  const onAssign = (e: React.FormEvent) => {
-    e.preventDefault();
-    const boardId = params.boardId as string;
-    executeAssign({
-      boardId,
-      cardId: data.id,
-      email: assignEmail,
-    });
-  };
 
   const [isCompleted, setIsCompleted] = useState(data.isCompleted || false);
   const [deadline, setDeadline] = useState(
@@ -148,9 +143,6 @@ export const Actions = ({ data }: ActionsProps) => {
     });
   };
 
-  const { user } = useAuth();
-  const assignedToMe = data.assignedTo === user?.email;
-
   const { data: members = [], isLoading: isLoadingMembers } = useQuery<any[]>({
     queryKey: ["board-members", params.boardId],
     queryFn: () => fetcher(`/api/boards/${params.boardId}/members`),
@@ -160,10 +152,17 @@ export const Actions = ({ data }: ActionsProps) => {
     <div className="space-y-2 mt-2">
       <p className="text-xs font-semibold">Actions</p>
 
-      {data.assignedTo && (
-        <p className="text-xs text-neutral-500 mb-2 truncate">
-          Assigned to: {data.assignedTo}
-        </p>
+      {allAssignees.length > 0 && (
+        <div className="text-xs text-neutral-500 mb-2">
+          Assigned to:
+          <div className="flex flex-wrap gap-1 mt-1">
+            {allAssignees.map((email, idx) => (
+              <span key={idx} className="bg-neutral-100 border border-neutral-200 rounded px-1.5 py-0.5 truncate max-w-[120px]">
+                {email.split("@")[0]}
+              </span>
+            ))}
+          </div>
+        </div>
       )}
 
       {(data.isAdmin || assignedToMe) && (
@@ -213,14 +212,14 @@ export const Actions = ({ data }: ActionsProps) => {
                   <div className="px-4 py-2 text-sm text-muted-foreground">No available members.</div>
                 ) : (
                   members.map((member) => {
-                    const isAssigned = data.assignedTo === member.email;
+                    const isAssigned = allAssignees.includes(member.email);
                     return (
                       <button
                         key={member.id}
                         type="button"
                         onClick={() => {
                           setIsAssignOpen(false);
-                          setAssignEmail(member.email);
+                          setLastActionEmail(member.email);
                           const boardId = params.boardId as string;
                           executeAssign({
                             boardId,

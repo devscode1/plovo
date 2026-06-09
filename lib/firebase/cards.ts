@@ -7,7 +7,7 @@ export interface Card {
   order: number;
   description: string | null;
   listId: string;
-  assignedTo?: string | null;
+  assignees?: string[];
   isCompleted?: boolean;
   deadline?: Date | null;
   completedAt?: Date | null;
@@ -20,6 +20,7 @@ export async function createCard(data: Omit<Card, "id" | "createdAt" | "updatedA
   const cardData = {
     ...data,
     description: data.description || null,
+    assignees: data.assignees || [],
     createdAt: new Date(),
     updatedAt: new Date(),
   };

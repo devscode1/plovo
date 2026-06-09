@@ -32,7 +32,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       isAdmin = role === "owner" || role === "admin";
     } catch {}
 
-    const isAssigned = card.assignedTo === ctx.user?.email;
+    const assignees = card.assignees || [];
+    const allAssignees = [...assignees, card.assignedTo].filter(Boolean) as string[];
+    const isAssigned = allAssignees.map(a => a.toLowerCase()).includes((ctx.user?.email || "").toLowerCase());
 
     if (!isAdmin && !isAssigned) {
       return { error: "Unauthorized - Must be an admin or assigned to this task" };
