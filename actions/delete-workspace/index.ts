@@ -8,7 +8,6 @@ import { requireAuthContext } from "@/lib/firebase/auth-helpers";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { requireAdminRole } from "@/lib/firebase/workspaces";
 import { getBoards, deleteBoard } from "@/lib/firebase/boards";
-import { redirect } from "next/navigation";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const ctx = await requireAuthContext();
@@ -59,10 +58,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     return { error: `Failed to delete workspace: ${error instanceof Error ? error.message : String(error)}` };
   }
 
-  // Redirect to workspace selection
   revalidatePath("/select-workspace");
   revalidatePath(`/organization/${orgId}`);
-  redirect("/select-workspace");
+  return { data: { success: true } };
 };
 
 export const deleteWorkspace = createSafeAction(DeleteWorkspace, handler);
