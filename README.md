@@ -84,6 +84,7 @@ plovo/
     |-- providers/
     |-- ui/
     |-- activity-item.tsx
+    |-- back-button.tsx
     |-- hint.tsx
     |-- logo.tsx
   |- config/
