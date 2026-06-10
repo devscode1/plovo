@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormPopover } from "@/components/form/form-popover";
 import { Logo } from "@/components/logo";
+import { BackButton } from "@/components/back-button";
 import { MobileSidebar } from "./mobile-sidebar";
 import { WorkspaceSwitcher } from "./workspace-switcher";
 import { UserMenu } from "./user-menu";
@@ -33,8 +34,11 @@ export const Navbar = () => {
   }
 
   return (
-    <nav className="fixed z-50 top-0 w-full px-4 h-14 border-b shadow-sm bg-white flex items-center">
-      <MobileSidebar />
+    <nav className="fixed z-50 top-0 w-full px-4 h-14 border-b shadow-sm bg-white flex items-center gap-x-2">
+      <div className="flex items-center gap-x-2">
+        <BackButton />
+        <MobileSidebar />
+      </div>
       <div className="flex items-center gap-x-4">
         <div className="hidden md:flex">
           <Logo />
