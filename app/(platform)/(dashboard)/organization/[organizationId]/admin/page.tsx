@@ -120,9 +120,9 @@ async function getMemberStats(orgId: string): Promise<MemberStats[]> {
 }
 
 function getRankBadge(index: number) {
-  if (index === 0) return { emoji: "🥇", label: "Top Performer", color: "bg-yellow-100 text-yellow-800 border-yellow-300" };
-  if (index === 1) return { emoji: "🥈", label: "Runner Up", color: "bg-gray-100 text-gray-700 border-gray-300" };
-  if (index === 2) return { emoji: "🥉", label: "3rd Place", color: "bg-orange-100 text-orange-700 border-orange-300" };
+  if (index === 0) return { emoji: "1", label: "Top Performer", color: "bg-yellow-100 text-yellow-800 border-yellow-300" };
+  if (index === 1) return { emoji: "2", label: "Runner Up", color: "bg-gray-100 text-gray-700 border-gray-300" };
+  if (index === 2) return { emoji: "3", label: "3rd Place", color: "bg-orange-100 text-orange-700 border-orange-300" };
   return { emoji: `#${index + 1}`, label: "Member", color: "bg-blue-50 text-blue-700 border-blue-200" };
 }
 
@@ -223,13 +223,13 @@ const AdminDashboardPage = async ({
 
                     {/* Stats row */}
                     <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
-                      <span>📋 <strong>{member.totalAssigned}</strong> assigned</span>
-                      <span className="text-green-600">✅ <strong>{member.completed}</strong> completed</span>
-                      <span className="text-red-500">❌ <strong>{member.missed}</strong> missed</span>
-                      <span className="text-blue-600">⚡ <strong>{member.completedOnTime}</strong> on-time</span>
+                      <span><strong>{member.totalAssigned}</strong> assigned</span>
+                      <span className="text-green-600"><strong>{member.completed}</strong> completed</span>
+                      <span className="text-red-500"><strong>{member.missed}</strong> missed</span>
+                      <span className="text-blue-600"><strong>{member.completedOnTime}</strong> on-time</span>
                       {member.avgDaysEarly > 0 && (
                         <span className="text-emerald-600">
-                          🚀 avg <strong>{member.avgDaysEarly}d</strong> early
+                          avg <strong>{member.avgDaysEarly}d</strong> early
                         </span>
                       )}
                     </div>
