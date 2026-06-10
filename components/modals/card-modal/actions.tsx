@@ -161,6 +161,8 @@ export const Actions = ({ data }: ActionsProps) => {
     queryFn: () => fetcher(`/api/boards/${params.boardId}/members`),
   });
 
+  const filteredMembers = members.filter((m: any) => m.role === "member");
+
   return (
     <div className="space-y-2 mt-2">
       <p className="text-xs font-semibold">Actions</p>
@@ -222,10 +224,10 @@ export const Actions = ({ data }: ActionsProps) => {
                 <div className="flex flex-col max-h-[220px] overflow-y-auto overflow-x-hidden -mx-3">
                   {isLoadingMembers ? (
                     <div className="px-4 py-2 text-sm text-muted-foreground">Loading members...</div>
-                  ) : !Array.isArray(members) || members.length === 0 ? (
+                  ) : !Array.isArray(filteredMembers) || filteredMembers.length === 0 ? (
                     <div className="px-4 py-2 text-sm text-muted-foreground">No available members.</div>
                   ) : (
-                    members.map((member) => {
+                    filteredMembers.map((member) => {
                       const isAssigned = allAssignees.includes(member.email);
                       return (
                         <button

@@ -21,7 +21,8 @@ interface MemberStats {
 
 async function getMemberStats(orgId: string): Promise<MemberStats[]> {
   const db = getAdminDb();
-  const members = await getWorkspaceMembers(orgId);
+  const allMembers = await getWorkspaceMembers(orgId);
+  const members = allMembers.filter((m) => m.role === "member");
 
   // Get all boards in this workspace
   const boardsSnap = await db
