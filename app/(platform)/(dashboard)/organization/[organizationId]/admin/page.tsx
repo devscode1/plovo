@@ -69,11 +69,18 @@ async function getMemberStats(orgId: string): Promise<MemberStats[]> {
       return allAssignees.includes(member.email);
     });
 
-    const completed = memberCards.filter((c) => c.isCompleted).length;
+    const completed = memberCards.filter((c) => {
+      const completedBy = c.completedBy || [];
+      return completedBy.map((e: string) => e.toLowerCase()).includes(member.email.toLowerCase());
+    }).length;
     const missed = memberCards.filter(
-      (c) => !c.isCompleted && c.deadline && c.deadline.toDate
-        ? c.deadline.toDate() < now
-        : c.deadline && new Date(c.deadline) < now
+      (c) => {
+        const completedBy = c.completedBy || [];
+        const isUserCompleted = completedBy.map((e: string) => e.toLowerCase()).includes(member.email.toLowerCase());
+        return !isUserCompleted && c.deadline && (c.deadline.toDate
+          ? c.deadline.toDate() < now
+          : new Date(c.deadline) < now);
+      }
     ).length;
 
     // Cards completed before deadline
@@ -81,7 +88,10 @@ async function getMemberStats(orgId: string): Promise<MemberStats[]> {
     let totalDaysEarly = 0;
 
     for (const c of memberCards) {
-      if (!c.isCompleted || !c.deadline || !c.completedAt) continue;
+      const completedBy = c.completedBy || [];
+      const isUserCompleted = completedBy.map((e: string) => e.toLowerCase()).includes(member.email.toLowerCase());
+
+      if (!isUserCompleted || !c.deadline || !c.completedAt) continue;
       const deadline = c.deadline?.toDate ? c.deadline.toDate() : new Date(c.deadline);
       const completedAt = c.completedAt?.toDate ? c.completedAt.toDate() : new Date(c.completedAt);
       const daysEarly = (deadline.getTime() - completedAt.getTime()) / (1000 * 60 * 60 * 24);

@@ -99,15 +99,17 @@ export const Actions = ({ data }: ActionsProps) => {
     }
   );
 
-  const [isCompleted, setIsCompleted] = useState(data.isCompleted || false);
+  const isInitiallyCompleted = (data.completedBy || []).map(e => e.toLowerCase()).includes(user?.email?.toLowerCase() || "");
+  const [isCompleted, setIsCompleted] = useState(isInitiallyCompleted);
   const [deadline, setDeadline] = useState(
     data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : ""
   );
 
   // Keep local state in sync when query data updates (e.g. after close/reopen)
   useEffect(() => {
-    setIsCompleted(data.isCompleted || false);
-  }, [data.isCompleted]);
+    const isComp = (data.completedBy || []).map(e => e.toLowerCase()).includes(user?.email?.toLowerCase() || "");
+    setIsCompleted(isComp);
+  }, [data.completedBy, user?.email]);
 
   useEffect(() => {
     setDeadline(data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : "");
@@ -115,7 +117,8 @@ export const Actions = ({ data }: ActionsProps) => {
 
   const { execute: executeToggle } = useAction(toggleCardCompletion, {
     onSuccess: (updatedCard) => {
-      toast.success(`Card marked as ${updatedCard.isCompleted ? 'complete' : 'incomplete'}.`);
+      const isNowCompletedByMe = (updatedCard.completedBy || []).map((e: string) => e.toLowerCase()).includes(user?.email?.toLowerCase() || "");
+      toast.success(`Task marked as ${isNowCompletedByMe ? 'complete' : 'incomplete'}.`);
       // Invalidate so query cache reflects truth
       queryClient.invalidateQueries({ queryKey: ["card", data.id] });
       queryClient.invalidateQueries({ queryKey: ["card-logs", data.id] });

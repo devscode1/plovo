@@ -28,6 +28,9 @@ export const Header = ({ data }: HeaderProps) => {
   const assignees = data.assignees || [];
   const allAssignees = [...assignees, data.assignedTo].filter(Boolean) as string[];
   const assignedToMe = allAssignees.map(a => String(a).toLowerCase()).includes(String(user?.email || "").toLowerCase());
+  
+  const completedBy = data.completedBy || [];
+  const isCompletedByMe = completedBy.map(e => e.toLowerCase()).includes(user?.email?.toLowerCase() || "");
 
   const { execute } = useAction(updateCard, {
     onSuccess: (data) => {
@@ -71,7 +74,8 @@ export const Header = ({ data }: HeaderProps) => {
       onSuccess: (cardData) => {
         queryClient.invalidateQueries({ queryKey: ["card", cardData.id] });
         queryClient.invalidateQueries({ queryKey: ["card-logs", cardData.id] });
-        toast.success(`Task marked as ${cardData.isCompleted ? "completed" : "incomplete"}`);
+        const isNowCompletedByMe = (cardData.completedBy || []).map((e: string) => e.toLowerCase()).includes(user?.email?.toLowerCase() || "");
+        toast.success(`Task marked as ${isNowCompletedByMe ? "completed" : "incomplete"}`);
       },
       onError: (error) => {
         toast.error(error);
@@ -83,7 +87,7 @@ export const Header = ({ data }: HeaderProps) => {
     executeToggle({
       id: data.id,
       boardId: params.boardId as string,
-      isCompleted: !data.isCompleted,
+      isCompleted: !isCompletedByMe,
     });
   };
 
@@ -95,7 +99,7 @@ export const Header = ({ data }: HeaderProps) => {
           {(data.isAdmin || assignedToMe) && (
             <input
               type="checkbox"
-              checked={!!data.isCompleted}
+              checked={isCompletedByMe}
               onChange={onToggleComplete}
               disabled={isToggling}
               className="w-4 h-4 cursor-pointer shrink-0"
@@ -108,11 +112,11 @@ export const Header = ({ data }: HeaderProps) => {
                 onBlur={onBlur}
                 ref={inputRef}
                 defaultValue={title}
-                className={`font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent w-full focus-visible:bg-white focus-visible:border-input mb-0.5 whitespace-normal break-words ${data.isCompleted ? "line-through text-neutral-500" : ""}`}
+                className={`font-semibold text-lg px-1 text-neutral-700 bg-transparent border-transparent w-full focus-visible:bg-white focus-visible:border-input mb-0.5 whitespace-normal break-words ${isCompletedByMe ? "line-through text-neutral-500" : ""}`}
               />
             </form>
           ) : (
-            <p className={`font-semibold text-lg px-1 text-neutral-700 mb-0.5 break-words flex-1 min-w-0 ${data.isCompleted ? "line-through text-neutral-500" : ""}`}>
+            <p className={`font-semibold text-lg px-1 text-neutral-700 mb-0.5 break-words flex-1 min-w-0 ${isCompletedByMe ? "line-through text-neutral-500" : ""}`}>
               {title}
             </p>
           )}

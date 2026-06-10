@@ -9,6 +9,7 @@ export interface Card {
   listId: string;
   assignedTo?: string | null;
   assignees?: string[];
+  completedBy?: string[];
   isCompleted?: boolean;
   deadline?: Date | null;
   completedAt?: Date | null;
@@ -22,6 +23,7 @@ export async function createCard(data: Omit<Card, "id" | "createdAt" | "updatedA
     ...data,
     description: data.description || null,
     assignees: data.assignees || [],
+    completedBy: [],
     createdAt: new Date(),
     updatedAt: new Date(),
   };

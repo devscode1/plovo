@@ -35,8 +35,15 @@ export async function GET(req: Request) {
 
       const assignees = card.assignees || [];
       const allAssignees = [...assignees, card.assignedTo].filter(Boolean) as string[];
+      const completedBy = card.completedBy || [];
 
       if (allAssignees.length === 0) continue; // skip unassigned cards
+
+      const pendingAssignees = allAssignees.filter(email => 
+        !completedBy.map((e: string) => e.toLowerCase()).includes(email.toLowerCase())
+      );
+
+      if (pendingAssignees.length === 0) continue;
 
       const deadline = card.deadline?.toDate
         ? card.deadline.toDate()
@@ -49,7 +56,7 @@ export async function GET(req: Request) {
         day: "numeric",
       });
 
-      for (const assignee of allAssignees) {
+      for (const assignee of pendingAssignees) {
         emailPromises.push(
           sendEmail({
             to: assignee,

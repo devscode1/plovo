@@ -34,21 +34,53 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     const assignees = card.assignees || [];
     const allAssignees = [...assignees, card.assignedTo].filter(Boolean) as string[];
-    const isAssigned = allAssignees.map(a => String(a).toLowerCase()).includes(String(ctx.user?.email || "").toLowerCase());
+    const userEmail = ctx.user?.email as string | undefined;
+    const isAssigned = allAssignees.map(a => String(a).toLowerCase()).includes(String(userEmail || "").toLowerCase());
 
     if (!isAdmin && !isAssigned) {
       return { error: "Unauthorized - Must be an admin or assigned to this task" };
     }
 
-    await getAdminDb().collection("cards").doc(id).update({
-      isCompleted,
-      updatedAt: new Date(),
-    });
+    if (!userEmail) {
+      return { error: "User email not found" };
+    }
 
-    // We skip the audit log here to keep it simple, or we could log it.
-    
+    const completedBy: string[] = card.completedBy || [];
+    let newCompletedBy = [...completedBy];
+
+    if (isCompleted) {
+      if (!newCompletedBy.map(e => e.toLowerCase()).includes(userEmail.toLowerCase())) {
+        newCompletedBy.push(userEmail);
+      }
+    } else {
+      newCompletedBy = newCompletedBy.filter(email => email.toLowerCase() !== userEmail.toLowerCase());
+    }
+
+    // A card is globally "isCompleted" only if all assignees have completed it.
+    // If no assignees, we use the value passed (admins can toggle it).
+    let allCompleted = isCompleted;
+    if (allAssignees.length > 0) {
+      allCompleted = allAssignees.every(email => 
+        newCompletedBy.map(e => e.toLowerCase()).includes(email.toLowerCase())
+      );
+    }
+
+    const updateData: any = {
+      completedBy: newCompletedBy,
+      isCompleted: allCompleted,
+      updatedAt: new Date(),
+    };
+
+    if (allCompleted && !card.isCompleted) {
+      updateData.completedAt = new Date();
+    } else if (!allCompleted && card.isCompleted) {
+      updateData.completedAt = null;
+    }
+
+    await getAdminDb().collection("cards").doc(id).update(updateData);
+
     revalidatePath(`/board/${boardId}`);
-    return { data: { ...card, isCompleted } };
+    return { data: { ...card, ...updateData } };
   } catch (error) {
     return { error: "Failed to toggle card completion" };
   }
