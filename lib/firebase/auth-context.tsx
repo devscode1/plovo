@@ -8,7 +8,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  updateProfile,
+  updateProfile as firebaseUpdateProfile,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/client";
@@ -29,6 +29,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updateProfile: (data: { displayName?: string | null; photoURL?: string | null }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -101,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, displayName: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(userCredential.user, { displayName });
+    await firebaseUpdateProfile(userCredential.user, { displayName });
     const token = await userCredential.user.getIdToken();
     document.cookie = `__session=${token}; path=/; max-age=3600; SameSite=Lax`;
   };
@@ -115,9 +116,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await sendPasswordResetEmail(auth, email);
   };
 
+  const updateProfile = async (data: { displayName?: string | null; photoURL?: string | null }) => {
+    if (!user) return;
+
+    const updates: { displayName?: string | null; photoURL?: string | null } = {};
+    if (data.displayName !== undefined) updates.displayName = data.displayName ?? null;
+    if (data.photoURL !== undefined) updates.photoURL = data.photoURL ?? null;
+
+    await firebaseUpdateProfile(user, updates);
+
+    const docRef = doc(db, "users", user.uid);
+    await setDoc(docRef, { ...updates }, { merge: true });
+
+    if (data.displayName !== undefined) {
+      setProfile((prev) => prev ? { ...prev, displayName: data.displayName ?? null } : null);
+    }
+    if (data.photoURL !== undefined) {
+      setProfile((prev) => prev ? { ...prev, photoURL: data.photoURL ?? null } : null);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, profile, loading, signIn, signUp, signOut, resetPassword }}
+      value={{ user, profile, loading, signIn, signUp, signOut, resetPassword, updateProfile }}
     >
       {children}
     </AuthContext.Provider>
